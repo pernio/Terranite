@@ -4,7 +4,6 @@ import jinzo.snorf.Snorf;
 import jinzo.snorf.utils.CommandHelper;
 import jinzo.snorf.utils.ConfigManager;
 import jinzo.snorf.utils.SelectionManager;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 
-public class fillSnorf {
+public class setSnorf {
     public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
@@ -20,7 +19,7 @@ public class fillSnorf {
         }
 
         if (args.length < 2) {
-            CommandHelper.sendError(sender, "Usage: /s fill <block>");
+            CommandHelper.sendError(sender, "Usage: /s set <block>");
             return true;
         }
 
@@ -67,7 +66,7 @@ public class fillSnorf {
             }
         }
 
-        CommandHelper.sendSuccess(player, "Filled " + count + " block(s) with " + material.name().toLowerCase() + ".");
+        CommandHelper.sendSuccess(player, "Set " + count + (count == 1 ? " block" : " blocks") + " to " + material.name().toLowerCase() + ".");
         return true;
     }
 }

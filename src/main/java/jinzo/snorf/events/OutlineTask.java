@@ -1,2 +1,48 @@
-package jinzo.snorf.events;public class OutlineTask {
+package jinzo.snorf.events;
+
+import jinzo.snorf.utils.SelectionManager;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+public class OutlineTask extends BukkitRunnable {
+    private final Player player;
+
+    public OutlineTask(Player player) {
+        this.player = player;
+    }
+
+    @Override
+    public void run() {
+        SelectionManager.Selection sel = SelectionManager.getSelection(player);
+        if (sel.pos1 == null || sel.pos2 == null) return;
+
+        Location min = sel.pos1.getLocation();
+        Location max = sel.pos2.getLocation();
+
+        int minX = Math.min(min.getBlockX(), max.getBlockX());
+        int minY = Math.min(min.getBlockY(), max.getBlockY());
+        int minZ = Math.min(min.getBlockZ(), max.getBlockZ());
+
+        int maxX = Math.max(min.getBlockX(), max.getBlockX());
+        int maxY = Math.max(min.getBlockY(), max.getBlockY());
+        int maxZ = Math.max(min.getBlockZ(), max.getBlockZ());
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    int edges = 0;
+                    if (x == minX || x == maxX) edges++;
+                    if (y == minY || y == maxY) edges++;
+                    if (z == minZ || z == maxZ) edges++;
+
+                    if (edges >= 2) {
+                        Location loc = new Location(player.getWorld(), x + 0.5, y + 0.5, z + 0.5);
+                        player.spawnParticle(Particle.HAPPY_VILLAGER, loc, 1, 0, 0, 0, 0);
+                    }
+                }
+            }
+        }
+    }
 }

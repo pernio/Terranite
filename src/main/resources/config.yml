@@ -1,0 +1,2 @@
+# Maximum amount of blocks that can be selected at once
+max_selection_size: 500_000
