@@ -1,0 +1,4 @@
+name: snorf
+version: '1.0.0'
+main: jinzo.snorf.Snorf
+api-version: '1.21'
