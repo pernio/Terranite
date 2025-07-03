@@ -1,19 +1,27 @@
 package jinzo.snorf.utils;
 
-import org.bukkit.block.data.BlockData;
 import org.bukkit.Location;
+import org.bukkit.block.data.BlockData;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClipboardManager {
-    public record ClipboardData(Map<String, BlockData> blocks, int width, int height, int depth, Location origin, float yaw, float pitch) {}
+    public record ClipboardData(
+            Map<String, BlockData> blocks,
+            int width,
+            int height,
+            int depth,
+            Location origin,
+            float yaw,
+            float pitch
+    ) {}
 
-    private static final Map<UUID, ClipboardData> clipboards = new HashMap<>();
+    private static final Map<UUID, ClipboardData> clipboards = new ConcurrentHashMap<>();
 
-    public static void setClipboard(UUID playerId, Map<String, BlockData> blocks, int w, int h, int d, Location origin, float yaw, float pitch) {
-        clipboards.put(playerId, new ClipboardData(blocks, w, h, d, origin, yaw, pitch));
+    public static void setClipboard(UUID playerId, Map<String, BlockData> blocks, int width, int height, int depth, Location origin, float yaw, float pitch) {
+        clipboards.put(playerId, new ClipboardData(blocks, width, height, depth, origin, yaw, pitch));
     }
 
     public static ClipboardData getClipboard(UUID playerId) {

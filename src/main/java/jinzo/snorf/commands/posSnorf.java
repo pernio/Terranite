@@ -12,7 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import static jinzo.snorf.listeners.SelectionListener.showOutline;
 
 public class posSnorf {
-    public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public static boolean onCommand(@NotNull CommandSender sender,
+                                    @NotNull Command command,
+                                    @NotNull String label,
+                                    @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
             return true;
@@ -50,7 +53,7 @@ public class posSnorf {
             return true;
         }
 
-        Block targetBlock = player.getWorld().getBlockAt(x, y, z);
+        Location targetBlock = player.getWorld().getBlockAt(x, y, z).getLocation();
 
         if (posNum == 1) {
             SelectionManager.setPos1(player, targetBlock);

@@ -1,28 +1,38 @@
 package jinzo.snorf.utils;
 
-import org.bukkit.block.Block;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SelectionManager {
-    private static final Map<Player, Selection> selections = new HashMap<>();
 
-    public static void setPos1(Player player, Block block) {
-        getSelection(player).pos1 = block;
+    private static final Map<UUID, Selection> selections = new ConcurrentHashMap<>();
+
+    public static void setPos1(Player player, Location location) {
+        getSelection(player.getUniqueId()).pos1 = location.clone();
     }
 
-    public static void setPos2(Player player, Block block) {
-        getSelection(player).pos2 = block;
+    public static void setPos2(Player player, Location location) {
+        getSelection(player.getUniqueId()).pos2 = location.clone();
     }
 
     public static Selection getSelection(Player player) {
-        return selections.computeIfAbsent(player, p -> new Selection());
+        return getSelection(player.getUniqueId());
+    }
+
+    private static Selection getSelection(UUID playerUUID) {
+        return selections.computeIfAbsent(playerUUID, id -> new Selection());
     }
 
     public static class Selection {
-        public Block pos1 = null;
-        public Block pos2 = null;
+        public Location pos1 = null;
+        public Location pos2 = null;
+    }
+
+    public static void clearSelection(Player player) {
+        selections.remove(player.getUniqueId());
     }
 }

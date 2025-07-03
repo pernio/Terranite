@@ -1,6 +1,5 @@
 package jinzo.snorf.listeners;
 
-import jinzo.snorf.events.OutlineTask;
 import jinzo.snorf.utils.OutlineTaskManager;
 import jinzo.snorf.utils.SelectionManager;
 import org.bukkit.entity.Player;
