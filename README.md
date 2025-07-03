@@ -34,6 +34,7 @@ These commands are available in the following aliases:<br/>
 | Var                  | Default | Description                                                                 |
 |----------------------|---------|-----------------------------------------------------------------------------|
 | `max_selection_size` | 500_000 | Maximum volume of blocks a selection can have. Used to limit excessive lag. |
+| `blocked_blocks`     |         | List of blocks you can't set, fill, ...                                     |
 
 ### Permissions
 Only the permission `terranite.use` is required to use the plugin. This permission is granted to OP by default.

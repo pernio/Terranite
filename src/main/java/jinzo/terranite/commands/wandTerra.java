@@ -3,6 +3,7 @@ package jinzo.terranite.commands;
 import jinzo.terranite.utils.CommandHelper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -26,8 +27,11 @@ public class wandTerra {
             ItemStack wand = new ItemStack(Material.ARROW);
             ItemMeta meta = wand.getItemMeta();
             if (meta != null) {
-                meta.displayName(Component.text("Terra wand", NamedTextColor.GOLD));
-                meta.lore(List.of(Component.text("This is a tool used for Terranite", NamedTextColor.GRAY)));
+                meta.displayName(
+                        Component.text("Terra wand", NamedTextColor.GOLD)
+                                .decoration(TextDecoration.ITALIC, false)
+                );
+                meta.lore(List.of(Component.text("This is a tool used for Terranite", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
                 wand.setItemMeta(meta);
             }
 

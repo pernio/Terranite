@@ -1,5 +1,6 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,13 +13,22 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 
 public class terraCommand implements CommandExecutor, TabCompleter {
 
+    private final pasteTerra pasteTerra;
+    private final saveTerra saveTerra;
+
     private static final List<String> SUBCOMMANDS = List.of(
             "wand", "set", "break", "pos", "copy", "cut", "paste",
-            "select", "fill", "replace", "count", "center", "undo", "redo", "clear"
+            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "save"
     );
+
+    public terraCommand(pasteTerra pasteTerra, saveTerra saveTerra) {
+        this.pasteTerra = pasteTerra;
+        this.saveTerra = saveTerra;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -54,6 +64,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             case "undo" -> undoTerra.onCommand(sender, command, label, args);
             case "redo" -> redoTerra.onCommand(sender, command, label, args);
             case "clear" -> clearTerra.onCommand(sender, command, label, args);
+            case "save" -> saveTerra.onCommand(sender, command, label, args);
             default -> {
                 CommandHelper.sendError(sender, "Invalid subcommand: " + subcommand);
                 yield false;
@@ -68,6 +79,9 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             @NotNull String alias,
             @NotNull String[] args
     ) {
+        var config = Terranite.getInstance().getConfiguration();
+        Set<Material> blockedMaterials = config.blockedMaterials;
+
         if (args.length == 1) {
             String typed = args[0].toLowerCase();
             return SUBCOMMANDS.stream()
@@ -94,6 +108,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                 case "set", "fill", "center" -> {
                     return List.of(Material.values()).stream()
                             .filter(Material::isBlock)
+                            .filter(m -> !blockedMaterials.contains(m))
                             .map(Material::name)
                             .map(String::toLowerCase)
                             .filter(name -> name.startsWith(args[1].toLowerCase()))
@@ -106,18 +121,39 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                 case "select" -> {
                     return List.of("2", "5", "10", "15", "20");
                 }
+                case "paste" -> {
+                    String typed = args[1].toLowerCase();
+                    List<String> allSchematics = Terranite.getInstance().getSchematicIO().getSavedSchematicNames();
+                    return allSchematics.stream()
+                            .filter(name -> name.toLowerCase().startsWith(typed))
+                            .limit(20)
+                            .toList();
+                }
             }
 
         }
 
-        if ((subcommand.equals("replace") && (args.length == 2 || args.length == 3))) {
-            return List.of(Material.values()).stream()
-                    .filter(Material::isBlock)
-                    .map(Material::name)
-                    .map(String::toLowerCase)
-                    .filter(name -> name.startsWith(args[args.length - 1].toLowerCase()))
-                    .limit(20)
-                    .toList();
+        if ((subcommand.equals("replace"))) {
+            if (args.length == 2) {
+                return List.of(Material.values()).stream()
+                        .filter(Material::isBlock)
+                        .map(Material::name)
+                        .map(String::toLowerCase)
+                        .filter(name -> name.startsWith(args[args.length - 1].toLowerCase()))
+                        .limit(20)
+                        .toList();
+            }
+
+            if (args.length == 3) {
+                return List.of(Material.values()).stream()
+                        .filter(Material::isBlock)
+                        .filter(m -> !blockedMaterials.contains(m))
+                        .map(Material::name)
+                        .map(String::toLowerCase)
+                        .filter(name -> name.startsWith(args[args.length - 1].toLowerCase()))
+                        .limit(20)
+                        .toList();
+            }
         }
 
         if (subcommand.equals("pos") && args.length >= 3 && args.length <= 5) {

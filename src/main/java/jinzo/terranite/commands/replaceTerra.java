@@ -1,5 +1,6 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -34,6 +35,14 @@ public class replaceTerra {
 
         if (replacement == null || !replacement.isBlock()) {
             CommandHelper.sendError(player, "Invalid replacement block: " + args[2]);
+            return true;
+        }
+
+        var config = Terranite.getInstance().getConfiguration();
+
+        // Check if the material is blocked
+        if (config.blockedMaterials.contains(replacement)) {
+            CommandHelper.sendError(player, "This block is forbidden to use");
             return true;
         }
 

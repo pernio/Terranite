@@ -1,10 +1,13 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.ClipboardManager;
 import jinzo.terranite.utils.CommandHelper;
-import jinzo.terranite.utils.SelectionManager;
+import jinzo.terranite.utils.SchematicIO;
+import jinzo.terranite.utils.SchematicIO.SchematicData;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,44 +17,68 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 public class pasteTerra {
-    public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
-                                    @NotNull String label, @NotNull String[] args) {
+    private final SchematicIO schematicIO;
+
+    public pasteTerra(SchematicIO schematicIO) {
+        this.schematicIO = schematicIO;
+    }
+
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
+                             @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
             return true;
         }
 
-        var selection = SelectionManager.getSelection(player);
-        if (selection.pos1 == null) {
-            CommandHelper.sendError(player, "You must set Position 1 before pasting.");
-            return true;
+        Map<String, BlockData> blocksToPaste;
+        String sourceName;
+
+        if (args.length >= 2) {
+            String name = args[1];
+            SchematicData schematicData = schematicIO.loadSchematic(name);
+            if (schematicData == null) {
+                CommandHelper.sendError(player, "Schematic '" + name + "' not found.");
+                return true;
+            }
+            blocksToPaste = schematicData.blocks;
+            sourceName = "schematic '" + name + "'";
+        } else {
+            if (!ClipboardManager.hasClipboard(player.getUniqueId())) {
+                CommandHelper.sendError(player, "Clipboard is empty. Use /s copy or /s cut first.");
+                return true;
+            }
+            var clipboardData = ClipboardManager.getClipboard(player.getUniqueId());
+            blocksToPaste = clipboardData.blocks();
+            sourceName = "clipboard";
         }
 
-        if (!ClipboardManager.hasClipboard(player.getUniqueId())) {
-            CommandHelper.sendError(player, "Clipboard is empty. Use /s copy or /s cut first.");
-            return true;
-        }
+        Location pasteOrigin = player.getLocation().getBlock().getLocation();
 
-        var clipboardData = ClipboardManager.getClipboard(player.getUniqueId());
-        Map<String, BlockData> clipboard = clipboardData.blocks();
+        // Get blocked materials list once for efficiency
+        var blockedMaterials = Terranite.getInstance().getConfiguration().blockedMaterials;
 
-        Location pasteOrigin = selection.pos1;
-
-        for (Map.Entry<String, BlockData> entry : clipboard.entrySet()) {
+        for (Map.Entry<String, BlockData> entry : blocksToPaste.entrySet()) {
             String[] parts = entry.getKey().split(",");
             int dx = Integer.parseInt(parts[0]);
             int dy = Integer.parseInt(parts[1]);
             int dz = Integer.parseInt(parts[2]);
 
-            Block target = player.getWorld().getBlockAt(
-                    pasteOrigin.getBlockX() + dx,
-                    pasteOrigin.getBlockY() + dy,
-                    pasteOrigin.getBlockZ() + dz
-            );
-            target.setBlockData(entry.getValue());
+            Location blockLoc = pasteOrigin.clone().add(dx, dy, dz);
+            BlockData blockData = entry.getValue();
+            // Check if the material is blocked
+            if (blockedMaterials.contains(blockData.getMaterial())) {
+                // Skip this block
+                continue;
+            }
+
+            Block targetBlock = blockLoc.getBlock();
+            targetBlock.setBlockData(blockData, false);
+
+            BlockState state = targetBlock.getState();
+            state.update(true, false);
         }
 
-        CommandHelper.sendSuccess(player, "Pasted clipboard at Position 1.");
+        CommandHelper.sendSuccess(player, "Pasted from " + sourceName + " at your location.");
         return true;
     }
 }

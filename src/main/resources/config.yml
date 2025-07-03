@@ -1,2 +1,14 @@
 # Maximum amount of blocks that can be selected at once
 max_selection_size: 500_000
+
+# Blocks that cannot be pasted, set, filled, replaced, etc.
+blocked_blocks:
+  - bedrock
+  - barrier
+  - end_portal_frame
+  - command_block
+  - repeating_command_block
+  - chain_command_block
+  - structure_block
+  - structure_void
+  - spawner
