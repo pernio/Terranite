@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class copySnorf {
-    public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
+                                    @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
             return true;
@@ -26,8 +27,8 @@ public class copySnorf {
             return true;
         }
 
-        var loc1 = sel.pos1.getLocation();
-        var loc2 = sel.pos2.getLocation();
+        var loc1 = sel.pos1;
+        var loc2 = sel.pos2;
 
         int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
         int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
@@ -40,7 +41,7 @@ public class copySnorf {
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    var block = player.getWorld().getBlockAt(x, y, z);
+                    Block block = player.getWorld().getBlockAt(x, y, z);
                     String key = (x - minX) + "," + (y - minY) + "," + (z - minZ);
                     clipboard.put(key, block.getBlockData());
                 }

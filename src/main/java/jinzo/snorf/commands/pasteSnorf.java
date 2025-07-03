@@ -14,7 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 public class pasteSnorf {
-    public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
+                                    @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
             return true;
@@ -34,7 +35,7 @@ public class pasteSnorf {
         var clipboardData = ClipboardManager.getClipboard(player.getUniqueId());
         Map<String, BlockData> clipboard = clipboardData.blocks();
 
-        Location pasteOrigin = selection.pos1.getLocation();
+        Location pasteOrigin = selection.pos1;
 
         for (Map.Entry<String, BlockData> entry : clipboard.entrySet()) {
             String[] parts = entry.getKey().split(",");

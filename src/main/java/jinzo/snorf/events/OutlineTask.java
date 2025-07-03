@@ -1,25 +1,29 @@
 package jinzo.snorf.events;
 
+import jinzo.snorf.utils.CommandHelper;
 import jinzo.snorf.utils.SelectionManager;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.inventory.ItemStack;
 
-public class OutlineTask extends BukkitRunnable {
+public class OutlineTask {
     private final Player player;
 
     public OutlineTask(Player player) {
         this.player = player;
     }
 
-    @Override
     public void run() {
+        // Do not check isOnline — Folia guarantees the player context if scheduled properly
         SelectionManager.Selection sel = SelectionManager.getSelection(player);
         if (sel.pos1 == null || sel.pos2 == null) return;
 
-        Location min = sel.pos1.getLocation();
-        Location max = sel.pos2.getLocation();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (!CommandHelper.isSnorfer(item)) return;
+
+        Location min = sel.pos1;
+        Location max = sel.pos2;
 
         int minX = Math.min(min.getBlockX(), max.getBlockX());
         int minY = Math.min(min.getBlockY(), max.getBlockY());
