@@ -24,7 +24,8 @@ These commands are available in the following aliases:<br/>
 | `/s select <radius>`         | Selects a specific radius around the player.             |
 | `/s copy`                    | Copies all blocks in a selection.                        |
 | `/s cut`                     | Cuts all blocks in a selection.                          |
-| `/s paste`                   | Pasts a copied/cut selection.                            |
+| `/s paste <file>`            | Pasts a copied/cut selection or file if specified.       |
+| `/s save <file>`             | Saves a copied/cut selection into a file                 |
 | `/s undo`                    | Undo's the previous action done.                         |
 | `/s paste`                   | Redo's the previous undo action done                     |
 
