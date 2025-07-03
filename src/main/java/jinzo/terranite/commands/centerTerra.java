@@ -1,5 +1,6 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
 import org.bukkit.Material;
 import org.bukkit.Location;
@@ -25,6 +26,12 @@ public class centerTerra {
         Material material = Material.matchMaterial(args[1]);
         if (material == null || !material.isBlock()) {
             CommandHelper.sendError(player, "Invalid block type: " + args[1]);
+            return true;
+        }
+
+        // Check if the material is blocked in the config
+        if (Terranite.getInstance().getConfiguration().blockedMaterials.contains(material)) {
+            CommandHelper.sendError(player, "This block is forbidden to use");
             return true;
         }
 

@@ -38,11 +38,16 @@ public class copyTerra {
         int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
 
         Map<String, BlockData> clipboard = new HashMap<>();
+
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
                     Block block = player.getWorld().getBlockAt(x, y, z);
-                    String key = (x - minX) + "," + (y - minY) + "," + (z - minZ);
+                    int dx = x - player.getLocation().getBlockX();
+                    int dy = y - player.getLocation().getBlockY();
+                    int dz = z - player.getLocation().getBlockZ();
+                    String key = dx + "," + dy + "," + dz;
+
                     clipboard.put(key, block.getBlockData());
                 }
             }
@@ -58,6 +63,7 @@ public class copyTerra {
                 player.getLocation().getYaw(),
                 player.getLocation().getPitch()
         );
+
         CommandHelper.sendSuccess(player, "Copied selection to clipboard.");
         return true;
     }

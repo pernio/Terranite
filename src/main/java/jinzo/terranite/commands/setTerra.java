@@ -1,5 +1,6 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -30,12 +31,22 @@ public class setTerra {
             return true;
         }
 
+        var config = Terranite.getInstance().getConfiguration();
+
+        // Check if the material is blocked
+        if (config.blockedMaterials.contains(material)) {
+            CommandHelper.sendError(player, "This block is forbidden to use");
+            return true;
+        }
+
         int changed = CommandHelper.modifySelection(player, material, block -> true);
 
         if (changed == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
         } else if (changed == -2) {
             CommandHelper.sendError(player, "Selection too large!");
+        } else if (changed == -3) {
+            return true;
         } else {
             CommandHelper.sendSuccess(player, "Set " + changed + (changed == 1 ? " block" : " blocks") + " to " + material.name().toLowerCase() + ".");
         }

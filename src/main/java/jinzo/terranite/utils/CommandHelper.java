@@ -1,6 +1,7 @@
 package jinzo.terranite.utils;
 
 import jinzo.terranite.Terranite;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -48,7 +49,7 @@ public class CommandHelper {
         ItemMeta meta = item.getItemMeta();
         if (meta.displayName() == null) return false;
 
-        Component expectedName = Component.text("Terra wand", NamedTextColor.GOLD);
+        Component expectedName = Component.text("Terra wand", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false);
         return meta.displayName().equals(expectedName);
     }
 
@@ -60,6 +61,8 @@ public class CommandHelper {
      * @return number of blocks changed, -1 if positions are not set, -2 if selection is too large
      */
     public static int modifySelection(Player player, Material material, Predicate<Block> filter) {
+        var config = Terranite.getInstance().getConfiguration();
+
         var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) return -1;
 
@@ -74,7 +77,7 @@ public class CommandHelper {
         int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
 
         long totalBlocks = (long)(maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
-        int maxSelectionSize = Terranite.getInstance().getConfiguration().maxSelectionSize;
+        int maxSelectionSize = config.maxSelectionSize;
         if (totalBlocks > maxSelectionSize) return -2;
 
         World world = player.getWorld();
@@ -82,7 +85,6 @@ public class CommandHelper {
 
         Map<Location, Material> snapshot = new HashMap<>();
 
-        // Iterate over the selection volume
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
