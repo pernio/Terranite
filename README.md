@@ -31,10 +31,11 @@ These commands are available in the following aliases:<br/>
 
 ### Config
 
-| Var                  | Default | Description                                                                 |
-|----------------------|---------|-----------------------------------------------------------------------------|
-| `max_selection_size` | 500_000 | Maximum volume of blocks a selection can have. Used to limit excessive lag. |
-| `blocked_blocks`     |         | List of blocks you can't set, fill, ...                                     |
+| Var                  | Default | Description                                                                                 |
+|----------------------|---------|---------------------------------------------------------------------------------------------|
+| `max_selection_size` | 500_000 | Maximum volume of blocks a selection can have. Used to limit excessive lag.                 |
+| `blocked_blocks`     |         | List of blocks you can't set, fill, ...                                                     |
+| `blocked_blocks`     |         | List of blocks you can set, fill, ... but will give a broadcast message to staff when used. |
 
 ### Permissions
 Only the permission `terranite.use` is required to use the plugin. This permission is granted to OP by default.

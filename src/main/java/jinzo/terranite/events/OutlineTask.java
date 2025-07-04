@@ -15,7 +15,6 @@ public class OutlineTask {
     }
 
     public void run() {
-        // Do not check isOnline — Folia guarantees the player context if scheduled properly
         SelectionManager.Selection sel = SelectionManager.getSelection(player);
         if (sel.pos1 == null || sel.pos2 == null) return;
 

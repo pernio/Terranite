@@ -65,9 +65,7 @@ public class pasteTerra {
 
             Location blockLoc = pasteOrigin.clone().add(dx, dy, dz);
             BlockData blockData = entry.getValue();
-            // Check if the material is blocked
             if (blockedMaterials.contains(blockData.getMaterial())) {
-                // Skip this block
                 continue;
             }
 

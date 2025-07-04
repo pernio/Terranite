@@ -14,10 +14,8 @@ public class cutTerra {
             return true;
         }
 
-        // Copy the selection first
         copyTerra.onCommand(sender, command, label, args);
 
-        // Then set the selection blocks to air (clear it)
         String[] airArgs = {"set", "air"};
         setTerra.onCommand(sender, command, label, airArgs);
 

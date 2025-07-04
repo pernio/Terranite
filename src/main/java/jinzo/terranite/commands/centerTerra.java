@@ -29,7 +29,6 @@ public class centerTerra {
             return true;
         }
 
-        // Check if the material is blocked in the config
         if (Terranite.getInstance().getConfiguration().blockedMaterials.contains(material)) {
             CommandHelper.sendError(player, "This block is forbidden to use");
             return true;

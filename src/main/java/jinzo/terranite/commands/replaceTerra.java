@@ -40,7 +40,6 @@ public class replaceTerra {
 
         var config = Terranite.getInstance().getConfiguration();
 
-        // Check if the material is blocked
         if (config.blockedMaterials.contains(replacement)) {
             CommandHelper.sendError(player, "This block is forbidden to use");
             return true;

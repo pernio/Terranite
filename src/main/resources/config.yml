@@ -12,3 +12,7 @@ blocked_blocks:
   - structure_block
   - structure_void
   - spawner
+
+# Blocks that give a broadcast message when pasted, set, filled, replaced, etc.
+broadcast_blocks:
+  - gold_block

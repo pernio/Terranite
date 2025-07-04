@@ -36,8 +36,6 @@ public class SchematicIO {
             config.set("blocks." + entry.getKey(), entry.getValue().getAsString());
         }
 
-        // Removed inventories saving
-
         try {
             config.save(file);
             return true;
