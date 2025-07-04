@@ -36,7 +36,6 @@ public class countTerra {
         int result = CommandHelper.countInSelection(player, (Block block) -> {
             Material type = block.getType();
 
-            // In "all blocks mode", skip air blocks
             if (allBlocksMode && type == Material.AIR) return false;
 
             if (allBlocksMode) {

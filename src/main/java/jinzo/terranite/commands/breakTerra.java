@@ -18,12 +18,10 @@ public class breakTerra {
             return true;
         }
 
-        // No arguments: delete everything (replace all with air)
         if (args.length < 2) {
             return setTerra.onCommand(sender, command, label, new String[]{"set", "air"});
         }
 
-        // Collect valid block types from args
         Set<Material> targetMaterials = new HashSet<>();
         for (int i = 1; i < args.length; i++) {
             Material mat = Material.matchMaterial(args[i]);

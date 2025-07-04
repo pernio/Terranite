@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class ActionHistoryManager {
-    // Thread-safe maps and deques for undo/redo
     private static final Map<UUID, ConcurrentLinkedDeque<Map<Location, Material>>> undoStack = new ConcurrentHashMap<>();
     private static final Map<UUID, ConcurrentLinkedDeque<Map<Location, Material>>> redoStack = new ConcurrentHashMap<>();
 
@@ -23,7 +22,7 @@ public class ActionHistoryManager {
     public static void record(Player player, Map<Location, Material> snapshot) {
         UUID uuid = player.getUniqueId();
         undoStack.computeIfAbsent(uuid, k -> new ConcurrentLinkedDeque<>()).push(snapshot);
-        redoStack.remove(uuid); // Clear redo stack on new action
+        redoStack.remove(uuid);
     }
 
     /**

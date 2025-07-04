@@ -22,7 +22,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> SUBCOMMANDS = List.of(
             "wand", "set", "break", "pos", "copy", "cut", "paste",
-            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "save"
+            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "save", "generate"
     );
 
     public terraCommand(pasteTerra pasteTerra, saveTerra saveTerra) {
@@ -65,6 +65,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             case "redo" -> redoTerra.onCommand(sender, command, label, args);
             case "clear" -> clearTerra.onCommand(sender, command, label, args);
             case "save" -> saveTerra.onCommand(sender, command, label, args);
+            case "generate" -> generateTerra.onCommand(sender, command, label, args);
             default -> {
                 CommandHelper.sendError(sender, "Invalid subcommand: " + subcommand);
                 yield false;
@@ -79,6 +80,10 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             @NotNull String alias,
             @NotNull String[] args
     ) {
+        if (!(sender instanceof Player player) || !player.hasPermission("terranite.use")) {
+            return List.of();
+        }
+
         var config = Terranite.getInstance().getConfiguration();
         Set<Material> blockedMaterials = config.blockedMaterials;
 
@@ -88,8 +93,6 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                     .filter(cmd -> cmd.startsWith(typed))
                     .toList();
         }
-
-        if (!(sender instanceof Player player)) return null;
 
         String subcommand = args[0].toLowerCase();
 
@@ -129,11 +132,14 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                             .limit(20)
                             .toList();
                 }
+                case "generate" -> {
+                    return List.of("box", "hollow_box", "sphere", "hollow_sphere");
+                }
             }
 
         }
 
-        if ((subcommand.equals("replace"))) {
+        if (subcommand.equals("replace")) {
             if (args.length == 2) {
                 return List.of(Material.values()).stream()
                         .filter(Material::isBlock)
@@ -154,6 +160,17 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                         .limit(20)
                         .toList();
             }
+        }
+
+        if (subcommand.equals("generate") && args.length == 3) {
+            return List.of(Material.values()).stream()
+                    .filter(Material::isBlock)
+                    .filter(m -> !blockedMaterials.contains(m))
+                    .map(Material::name)
+                    .map(String::toLowerCase)
+                    .filter(name -> name.startsWith(args[2].toLowerCase()))
+                    .limit(20)
+                    .toList();
         }
 
         if (subcommand.equals("pos") && args.length >= 3 && args.length <= 5) {

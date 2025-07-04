@@ -56,8 +56,8 @@ public class selectTerra {
         SelectionManager.setPos2(player, pos2);
 
         CommandHelper.sendSuccess(player, String.format("Selected box from (%d, %d, %d) to (%d, %d, %d)",
-                pos1.getX(), pos1.getY(), pos1.getZ(),
-                pos2.getX(), pos2.getY(), pos2.getZ()));
+                (int) pos1.getX(), (int) pos1.getY(), (int) pos1.getZ(),
+                (int) pos2.getX(), (int) pos2.getY(), (int) pos2.getZ()));
 
         return true;
     }

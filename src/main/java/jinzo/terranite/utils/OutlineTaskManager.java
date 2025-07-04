@@ -25,8 +25,8 @@ public class OutlineTaskManager {
                 Terranite.getInstance(),
                 loc,
                 (scheduledTask) -> new OutlineTask(player).run(),
-                1L, // initial delay (must be >= 1)
-                20L // repeat every 20 ticks (1 second)
+                1L,
+                20L
         );
 
         runningTasks.put(uuid, task);
