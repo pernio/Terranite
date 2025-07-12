@@ -11,13 +11,15 @@ public class cutTerra {
                                     @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
-        copyTerra.onCommand(sender, command, label, args);
+        boolean copySuccess = copyTerra.onCommand(sender, command, label, args);
+        if (!copySuccess) return false;
 
         String[] airArgs = {"set", "air"};
-        setTerra.onCommand(sender, command, label, airArgs);
+        boolean setSuccess = setTerra.onCommand(sender, command, label, airArgs);
+        if (!setSuccess) return false;
 
         CommandHelper.sendSuccess(player, "Cut selection.");
         return true;

@@ -6,11 +6,13 @@ folia-supported: true
 commands:
   s:
     description: Base command for Terranite
-    usage: /s <subcommand>
     aliases: [terra, terranite, selection]
     permission: terranite.use
     permission-message: You do not have permission to use this command.
 permissions:
   terranite.use:
     description: Allows use of the Terranite base command and its aliases
+    default: op
+  terranite.admin:
+    description: Allows use of administrative commands for Terranite
     default: op

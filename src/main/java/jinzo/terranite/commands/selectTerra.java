@@ -18,12 +18,12 @@ public class selectTerra {
     ) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         if (args.length != 2 || !args[0].equalsIgnoreCase("select")) {
             CommandHelper.sendError(player, "Usage: /s select <radius>");
-            return true;
+            return false;
         }
 
         int radius;
@@ -31,11 +31,11 @@ public class selectTerra {
             radius = Integer.parseInt(args[1]);
             if (radius < 0) {
                 CommandHelper.sendError(player, "Radius must be a positive integer.");
-                return true;
+                return false;
             }
         } catch (NumberFormatException e) {
             CommandHelper.sendError(player, "Invalid radius value.");
-            return true;
+            return false;
         }
 
         Block center = player.getLocation().getBlock();

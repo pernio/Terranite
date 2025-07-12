@@ -15,29 +15,29 @@ public class centerTerra {
                                     @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         if (args.length != 2) {
             CommandHelper.sendError(player, "Usage: /s center <block>");
-            return true;
+            return false;
         }
 
         Material material = Material.matchMaterial(args[1]);
         if (material == null || !material.isBlock()) {
             CommandHelper.sendError(player, "Invalid block type: " + args[1]);
-            return true;
+            return false;
         }
 
         if (Terranite.getInstance().getConfiguration().blockedMaterials.contains(material)) {
             CommandHelper.sendError(player, "This block is forbidden to use");
-            return true;
+            return false;
         }
 
         var selection = jinzo.terranite.utils.SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
-            return true;
+            return false;
         }
 
         Location loc1 = selection.pos1;

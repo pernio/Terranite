@@ -17,12 +17,12 @@ public class generateTerra {
                                     @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         if (args.length != 3) {
             CommandHelper.sendError(player, "Usage: /s generate <box|hollow_box|sphere|hollow_sphere> <block>");
-            return true;
+            return false;
         }
 
         String shape = args[1].toLowerCase();
@@ -30,20 +30,20 @@ public class generateTerra {
 
         if (material == null || !material.isBlock()) {
             CommandHelper.sendError(player, "Invalid block type: " + args[2]);
-            return true;
+            return false;
         }
 
         var config = Terranite.getInstance().getConfiguration();
 
         if (config.blockedMaterials.contains(material)) {
             CommandHelper.sendError(player, "This block is forbidden to use");
-            return true;
+            return false;
         }
 
         var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
-            return true;
+            return false;
         }
 
         Location pos1 = selection.pos1;
@@ -55,6 +55,10 @@ public class generateTerra {
         int maxY = Math.max(pos1.getBlockY(), pos2.getBlockY());
         int minZ = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
         int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
+
+        int volume = (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
+        boolean selectionValidSize = CommandHelper.checkSelectionSize(player, volume);
+        if (!selectionValidSize) return false;
 
         World world = player.getWorld();
         int changed = 0;
@@ -120,7 +124,7 @@ public class generateTerra {
             }
             default -> {
                 CommandHelper.sendError(player, "Unsupported shape: " + shape);
-                return true;
+                return false;
             }
         }
 

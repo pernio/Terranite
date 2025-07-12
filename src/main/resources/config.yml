@@ -1,4 +1,4 @@
-# Maximum amount of blocks that can be selected at once
+# Maximum amount of blocks that can be selected at once. -1 for no limit.
 max_selection_size: 500_000
 
 # Blocks that cannot be pasted, set, filled, replaced, etc.
@@ -12,7 +12,3 @@ blocked_blocks:
   - structure_block
   - structure_void
   - spawner
-
-# Blocks that give a broadcast message when pasted, set, filled, replaced, etc.
-broadcast_blocks:
-  - gold_block

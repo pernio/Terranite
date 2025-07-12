@@ -15,7 +15,7 @@ public class breakTerra {
                                     @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         if (args.length < 2) {
@@ -27,7 +27,7 @@ public class breakTerra {
             Material mat = Material.matchMaterial(args[i]);
             if (mat == null || !mat.isBlock()) {
                 CommandHelper.sendError(player, "Invalid block type: " + args[i]);
-                return true;
+                return false;
             }
             targetMaterials.add(mat);
         }
@@ -42,13 +42,10 @@ public class breakTerra {
 
         if (result == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
-            return true;
+            return false;
         }
 
-        if (result == -2) {
-            CommandHelper.sendError(player, "Selection too large!");
-            return true;
-        }
+        if (result == -2) return false;
 
         CommandHelper.sendSuccess(player, "Deleted " + result + " block(s).");
         return true;

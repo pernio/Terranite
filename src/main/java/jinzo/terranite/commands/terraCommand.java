@@ -22,7 +22,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> SUBCOMMANDS = List.of(
             "wand", "set", "break", "pos", "copy", "cut", "paste",
-            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "save", "generate"
+            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "save", "generate", "reload"
     );
 
     public terraCommand(pasteTerra pasteTerra, saveTerra saveTerra) {
@@ -34,16 +34,16 @@ public class terraCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use Terranite commands.");
-            return true;
+            return false;
         }
 
         if (!player.hasPermission("terranite.use")) {
             CommandHelper.sendError(player, "You do not have permission to use Terranite.");
-            return true;
+            return false;
         }
         if (args.length == 0) {
             CommandHelper.sendError(sender, "Usage: /s <subcommand>");
-            return true;
+            return false;
         }
 
         String subcommand = args[0].toLowerCase();
@@ -66,6 +66,19 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             case "clear" -> clearTerra.onCommand(sender, command, label, args);
             case "save" -> saveTerra.onCommand(sender, command, label, args);
             case "generate" -> generateTerra.onCommand(sender, command, label, args);
+            case "reload" -> {
+                if (!player.hasPermission("terranite.admin")) {
+                    CommandHelper.sendError(player, "You do not have permission to reload Terranite.");
+                    yield false;
+                }
+
+                Terranite plugin = Terranite.getInstance();
+                plugin.reloadConfig();
+                plugin.getConfiguration().reload();
+
+                CommandHelper.sendSuccess(player, "Terranite configuration reloaded.");
+                yield true;
+            }
             default -> {
                 CommandHelper.sendError(sender, "Invalid subcommand: " + subcommand);
                 yield false;
@@ -89,7 +102,9 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 1) {
             String typed = args[0].toLowerCase();
+
             return SUBCOMMANDS.stream()
+                    .filter(cmd -> !cmd.equals("reload") || player.hasPermission("terranite.admin"))
                     .filter(cmd -> cmd.startsWith(typed))
                     .toList();
         }

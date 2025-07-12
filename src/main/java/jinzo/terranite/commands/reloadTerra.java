@@ -1,13 +1,13 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
-import jinzo.terranite.utils.SelectionManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class clearTerra {
+public class reloadTerra {
     public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
                                     @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
@@ -15,9 +15,11 @@ public class clearTerra {
             return false;
         }
 
-        SelectionManager.clearSelection(player);
-        CommandHelper.sendSuccess(player, "Selection cleared.");
+        Terranite plugin = Terranite.getInstance();
+        plugin.reloadConfig();
+        plugin.getConfiguration().reload();
 
+        CommandHelper.sendSuccess(player, "Terranite configuration reloaded.");
         return true;
     }
 }

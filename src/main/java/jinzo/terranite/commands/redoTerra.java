@@ -16,7 +16,7 @@ public class redoTerra {
     ) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         boolean success = ActionHistoryManager.redo(player);

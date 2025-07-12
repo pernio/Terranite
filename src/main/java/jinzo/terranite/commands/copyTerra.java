@@ -18,13 +18,13 @@ public class copyTerra {
                                     @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         var sel = SelectionManager.getSelection(player);
         if (sel.pos1 == null || sel.pos2 == null) {
             CommandHelper.sendError(player, "Set both positions first.");
-            return true;
+            return false;
         }
 
         var loc1 = sel.pos1;
@@ -36,6 +36,10 @@ public class copyTerra {
         int maxX = Math.max(loc1.getBlockX(), loc2.getBlockX());
         int maxY = Math.max(loc1.getBlockY(), loc2.getBlockY());
         int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
+
+        int volume = (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
+        boolean selectionValidSize = CommandHelper.checkSelectionSize(player, volume);
+        if (!selectionValidSize) return false;
 
         Map<String, BlockData> clipboard = new HashMap<>();
 

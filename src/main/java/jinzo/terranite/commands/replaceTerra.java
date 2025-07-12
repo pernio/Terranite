@@ -17,12 +17,12 @@ public class replaceTerra {
     ) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         if (args.length < 3) {
             CommandHelper.sendError(player, "Usage: /s replace <target_block> <new_block>");
-            return true;
+            return false;
         }
 
         Material target = Material.matchMaterial(args[1]);
@@ -30,27 +30,28 @@ public class replaceTerra {
 
         if (target == null || !target.isBlock()) {
             CommandHelper.sendError(player, "Invalid target block: " + args[1]);
-            return true;
+            return false;
         }
 
         if (replacement == null || !replacement.isBlock()) {
             CommandHelper.sendError(player, "Invalid replacement block: " + args[2]);
-            return true;
+            return false;
         }
 
         var config = Terranite.getInstance().getConfiguration();
 
         if (config.blockedMaterials.contains(replacement)) {
             CommandHelper.sendError(player, "This block is forbidden to use");
-            return true;
+            return false;
         }
 
         int changed = CommandHelper.modifySelection(player, replacement, block -> block.getType() == target);
 
         if (changed == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
+            return false;
         } else if (changed == -2) {
-            CommandHelper.sendError(player, "Selection too large!");
+            return false;
         } else {
             CommandHelper.sendSuccess(player, "Replaced " + changed + (changed == 1 ? " block" : " blocks") + " of " + target.name().toLowerCase() + " with " + replacement.name().toLowerCase() + ".");
         }

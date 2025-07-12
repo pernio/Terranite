@@ -25,19 +25,19 @@ public class saveTerra {
                              @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         if (args.length < 2) {
             CommandHelper.sendError(player, "Usage: /s save <name>");
-            return true;
+            return false;
         }
 
         String name = args[1];
 
         if (!ClipboardManager.hasClipboard(player.getUniqueId())) {
             CommandHelper.sendError(player, "Clipboard is empty. Use /s copy or /s cut first.");
-            return true;
+            return false;
         }
 
         var clipboardData = ClipboardManager.getClipboard(player.getUniqueId());
@@ -52,6 +52,7 @@ public class saveTerra {
             CommandHelper.sendSuccess(player, "Schematic saved as '" + name + "'");
         } else {
             CommandHelper.sendError(player, "Schematic name already exists or error occurred.");
+            return false;
         }
         return true;
     }

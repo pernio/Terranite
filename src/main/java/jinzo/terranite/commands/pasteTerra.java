@@ -27,7 +27,7 @@ public class pasteTerra {
                              @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         Map<String, BlockData> blocksToPaste;
@@ -38,14 +38,14 @@ public class pasteTerra {
             SchematicData schematicData = schematicIO.loadSchematic(name);
             if (schematicData == null) {
                 CommandHelper.sendError(player, "Schematic '" + name + "' not found.");
-                return true;
+                return false;
             }
             blocksToPaste = schematicData.blocks;
             sourceName = "schematic '" + name + "'";
         } else {
             if (!ClipboardManager.hasClipboard(player.getUniqueId())) {
                 CommandHelper.sendError(player, "Clipboard is empty. Use /s copy or /s cut first.");
-                return true;
+                return false;
             }
             var clipboardData = ClipboardManager.getClipboard(player.getUniqueId());
             blocksToPaste = clipboardData.blocks();

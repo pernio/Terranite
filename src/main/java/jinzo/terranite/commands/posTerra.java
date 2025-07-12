@@ -17,12 +17,12 @@ public class posTerra {
                                     @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         if (args.length < 2) {
             CommandHelper.sendError(player, "Usage: /s pos <1|2> [x] [y] [z]");
-            return true;
+            return false;
         }
 
         Location currentLoc = player.getLocation();
@@ -35,11 +35,11 @@ public class posTerra {
             posNum = Integer.parseInt(args[1]);
             if (posNum != 1 && posNum != 2) {
                 CommandHelper.sendError(player, "Position must be 1 or 2");
-                return true;
+                return false;
             }
         } catch (NumberFormatException e) {
             CommandHelper.sendError(player, "Position must be 1 or 2");
-            return true;
+            return false;
         }
 
         int x, y, z;
@@ -49,7 +49,7 @@ public class posTerra {
             z = (args.length > 4) ? Integer.parseInt(args[4]) : currentZ;
         } catch (NumberFormatException e) {
             CommandHelper.sendError(player, "Coordinates must be numbers");
-            return true;
+            return false;
         }
 
         Location targetBlock = player.getWorld().getBlockAt(x, y, z).getLocation();

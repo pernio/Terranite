@@ -16,7 +16,7 @@ public class countTerra {
                                     @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
-            return true;
+            return false;
         }
 
         final boolean allBlocksMode = args.length < 2;
@@ -53,17 +53,14 @@ public class countTerra {
 
         if (result == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
-            return true;
+            return false;
         }
 
-        if (result == -2) {
-            CommandHelper.sendError(player, "Selection too large!");
-            return true;
-        }
+        if (result == -2) return false;
 
         if (blockCounts.isEmpty() || blockCounts.values().stream().allMatch(c -> c == 0)) {
             CommandHelper.sendInfo(player, "No matching blocks found in selection.");
-            return true;
+            return false;
         }
 
         StringBuilder response = new StringBuilder("Found the following blocks in your selection:\n");

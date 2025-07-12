@@ -61,7 +61,6 @@ public class CommandHelper {
      * @return number of blocks changed, -1 if positions are not set, -2 if selection is too large
      */
     public static int modifySelection(Player player, Material material, Predicate<Block> filter) {
-        var config = Terranite.getInstance().getConfiguration();
 
         var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) return -1;
@@ -77,8 +76,8 @@ public class CommandHelper {
         int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
 
         long totalBlocks = (long)(maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
-        int maxSelectionSize = config.maxSelectionSize;
-        if (totalBlocks > maxSelectionSize) return -2;
+        boolean selectionValidSize = checkSelectionSize(player, totalBlocks);
+        if (!selectionValidSize) return -2;
 
         World world = player.getWorld();
         int changed = 0;
@@ -120,8 +119,8 @@ public class CommandHelper {
         int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
 
         long totalBlocks = (long)(maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
-        int maxSelectionSize = Terranite.getInstance().getConfiguration().maxSelectionSize;
-        if (totalBlocks > maxSelectionSize) return -2;
+        boolean selectionValidSize = checkSelectionSize(player, totalBlocks);
+        if (!selectionValidSize) return -2;
 
         World world = player.getWorld();
         int changed = 0;
@@ -150,7 +149,7 @@ public class CommandHelper {
 
     /**
      * Counts blocks in player's selection matching filter.
-     * Returns -1 if selection positions are unset, -2 if selection volume exceeds 500,000 blocks.
+     * Returns -1 if selection positions are unset, -2 if selection volume too large
      */
     public static int countInSelection(Player player, Predicate<Block> filter) {
         var selection = SelectionManager.getSelection(player);
@@ -167,7 +166,8 @@ public class CommandHelper {
         int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
 
         long volume = (long)(maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
-        if (volume > 500_000) return -2;
+        boolean selectionValidSize = checkSelectionSize(player, volume);
+        if (!selectionValidSize) return -2;
 
         int count = 0;
         World world = player.getWorld();
@@ -182,5 +182,14 @@ public class CommandHelper {
         }
 
         return count;
+    }
+
+    public static boolean checkSelectionSize(Player player, long volume) {
+        int maxSelectionSize = Terranite.getInstance().getConfiguration().maxSelectionSize;
+        if (maxSelectionSize != -1 && volume > maxSelectionSize) {
+            sendError(player, "Selection too large. Limit is " + maxSelectionSize + " blocks.");
+            return false;
+        }
+        return true;
     }
 }
