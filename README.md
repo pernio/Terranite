@@ -47,4 +47,4 @@ These commands are available in the following aliases:<br/>
 | Permission        | Default | Description                             |
 |-------------------|---------|-----------------------------------------|
 | `terranite.use`   | OP      | Basic usage of Terranite.               |
-| `terranite.admin` | OP      | List of blocks you can't set, fill, ... |
+| `terranite.admin` | OP      | Access advanced commands of Terranite.  |
