@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import static jinzo.terranite.utils.CommandHelper.isTerraWand;
 import static org.bukkit.Bukkit.getLogger;
 
 public class wandTerra {
@@ -21,6 +22,13 @@ public class wandTerra {
         if (!(sender instanceof Player player)) {
             CommandHelper.sendError(sender, "Only players can use this.");
             return false;
+        }
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (isTerraWand(item)) {
+                CommandHelper.sendError(player, "You already have a Terra wand!");
+                return false;
+            }
         }
 
         try {

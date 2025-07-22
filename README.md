@@ -37,14 +37,24 @@ These commands are available in the following aliases:<br/>
 
 ### Config
 
-| Var                  | Default | Description                                                                                        |
-|----------------------|---------|----------------------------------------------------------------------------------------------------|
-| `max_selection_size` | 500_000 | Maximum volume of blocks a selection can have. Used to limit excessive lag. -1 for unlimited size. |
-| `blocked_blocks`     |         | List of blocks you can't set, fill, ...                                                            |
+| Var                  | Default                | Description                                                                                        |
+|----------------------|------------------------|----------------------------------------------------------------------------------------------------|
+| `max_selection_size` | 500_000                | Maximum volume of blocks a selection can have. Used to limit excessive lag. -1 for unlimited size. |
+| `blocked_blocks`     |                        | List of blocks you can't set, fill, ...                                                            |
+| `notified_blocks`    |                        | List of blocks that give a notification to the console when being used.                            |
+| `log_notifications`  | false                  | If the notifications should be logged to server files.                                             |
+| `select_effect`      | HAPPY_VILLAGER         | Effect of selecting.                                                                               |
+| `outline_effect`     | HAPPY_VILLAGER         | Effect of the outline.                                                                             |
+| `play_sound`         | false                  | If selecting should make sound.                                                                    |
+| `select_sound`       | BLOCK_NOTE_BLOCK_PLING | Sound of selecting                                                                                 |
 
 ### Permissions
 
-| Permission        | Default | Description                             |
-|-------------------|---------|-----------------------------------------|
-| `terranite.use`   | OP      | Basic usage of Terranite.               |
-| `terranite.admin` | OP      | Access advanced commands of Terranite.  |
+| Permission                        | Default | Description                                             |
+|-----------------------------------|---------|---------------------------------------------------------|
+| `terranite.use`                   | OP      | Basic usage of Terranite.                               |
+| `terranite.admin`                 | OP      | List of blocks you can't set, fill, ...                 |
+| `terranite.exempt.*`              | OP      | Covers all subpermissions.                              |
+| `terranite.exempt.selection`      | OP      | Exempt from the limit of blocks you can select at once. |
+| `terranite.exempt.blockedBlocks`  | OP      | Exempt from not be able to use blocked blocks.          |
+| `terranite.exempt.notifiedBlocks` | OP      | Exempt from being notified to console.                  |

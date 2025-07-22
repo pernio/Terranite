@@ -1,6 +1,5 @@
 package jinzo.terranite.commands;
 
-import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -27,12 +26,7 @@ public class fillTerra {
             return false;
         }
 
-        var config = Terranite.getInstance().getConfiguration();
-
-        if (config.blockedMaterials.contains(material)) {
-            CommandHelper.sendError(player, "This block is forbidden to use");
-            return false;
-        }
+        if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
         int changed = CommandHelper.modifySelection(player, material, block -> block.getType().isAir());
 

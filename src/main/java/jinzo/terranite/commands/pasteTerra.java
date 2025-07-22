@@ -1,11 +1,10 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.Terranite;
-import jinzo.terranite.utils.ClipboardManager;
-import jinzo.terranite.utils.CommandHelper;
-import jinzo.terranite.utils.SchematicIO;
+import jinzo.terranite.utils.*;
 import jinzo.terranite.utils.SchematicIO.SchematicData;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
@@ -14,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class pasteTerra {
@@ -54,8 +54,14 @@ public class pasteTerra {
 
         Location pasteOrigin = player.getLocation().getBlock().getLocation();
 
-        // Get blocked materials list once for efficiency
         var blockedMaterials = Terranite.getInstance().getConfiguration().blockedMaterials;
+        var notifiedMaterials = Terranite.getInstance().getConfiguration().notifiedMaterials;
+
+        Map<Location, Material> snapshot = new HashMap<>();
+        Map<Material, Integer> notifiedCount = new HashMap<>();
+        Map<Material, Location> firstLocation = new HashMap<>();
+
+        int changed = 0;
 
         for (Map.Entry<String, BlockData> entry : blocksToPaste.entrySet()) {
             String[] parts = entry.getKey().split(",");
@@ -65,18 +71,61 @@ public class pasteTerra {
 
             Location blockLoc = pasteOrigin.clone().add(dx, dy, dz);
             BlockData blockData = entry.getValue();
-            if (blockedMaterials.contains(blockData.getMaterial())) {
+
+            if (!player.hasPermission("terranite.exempt.blockedBlocks") && blockedMaterials.contains(blockData.getMaterial())) {
                 continue;
             }
 
             Block targetBlock = blockLoc.getBlock();
-            targetBlock.setBlockData(blockData, false);
+            Material before = targetBlock.getType();
 
-            BlockState state = targetBlock.getState();
-            state.update(true, false);
+            if (!before.equals(blockData.getMaterial()) || !targetBlock.getBlockData().matches(blockData)) {
+                // Save original material for undo
+                snapshot.put(blockLoc, before);
+
+                // Set new block data without physics (false)
+                targetBlock.setBlockData(blockData, false);
+
+                // Update block state (optional but good)
+                BlockState state = targetBlock.getState();
+                state.update(true, false);
+
+                changed++;
+
+                // Check if this material should notify
+                Material mat = blockData.getMaterial();
+                if (notifiedMaterials.contains(mat)) {
+                    notifiedCount.merge(mat, 1, Integer::sum);
+                    firstLocation.putIfAbsent(mat, blockLoc);
+                }
+            }
         }
 
-        CommandHelper.sendSuccess(player, "Pasted from " + sourceName + " at your location.");
+        if (!snapshot.isEmpty()) {
+            ActionHistoryManager.record(player, snapshot);
+        }
+
+        // Bypass logging
+        if (player.hasPermission("terranite.exempt.notifiedBlocks")) return true;
+
+        // Log notifications for notified materials
+        for (Map.Entry<Material, Integer> entry : notifiedCount.entrySet()) {
+            Material mat = entry.getKey();
+            int count = entry.getValue();
+            Location loc = firstLocation.get(mat);
+
+            String message = String.format(
+                    "[Terra] %s placed %d blocks of %s (example at %d,%d,%d in %s)",
+                    player.getName(),
+                    count,
+                    mat.name(),
+                    loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
+                    loc.getWorld().getName()
+            );
+            CommandHelper.logMessage(player, message);
+        }
+
+        CommandHelper.sendSuccess(player, "Pasted from " + sourceName + " at your location. Changed " + changed + " blocks.");
         return true;
     }
 }

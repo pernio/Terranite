@@ -99,6 +99,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
         var config = Terranite.getInstance().getConfiguration();
         Set<Material> blockedMaterials = config.blockedMaterials;
+        boolean exempt = player.hasPermission("terranite.exempt.blockedBlocks");
 
         if (args.length == 1) {
             String typed = args[0].toLowerCase();
@@ -126,7 +127,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                 case "set", "fill", "center" -> {
                     return List.of(Material.values()).stream()
                             .filter(Material::isBlock)
-                            .filter(m -> !blockedMaterials.contains(m))
+                            .filter(m -> exempt || !blockedMaterials.contains(m))
                             .map(Material::name)
                             .map(String::toLowerCase)
                             .filter(name -> name.startsWith(args[1].toLowerCase()))
@@ -168,7 +169,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             if (args.length == 3) {
                 return List.of(Material.values()).stream()
                         .filter(Material::isBlock)
-                        .filter(m -> !blockedMaterials.contains(m))
+                        .filter(m -> exempt || !blockedMaterials.contains(m))
                         .map(Material::name)
                         .map(String::toLowerCase)
                         .filter(name -> name.startsWith(args[args.length - 1].toLowerCase()))
@@ -180,7 +181,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
         if (subcommand.equals("generate") && args.length == 3) {
             return List.of(Material.values()).stream()
                     .filter(Material::isBlock)
-                    .filter(m -> !blockedMaterials.contains(m))
+                    .filter(m -> exempt || !blockedMaterials.contains(m))
                     .map(Material::name)
                     .map(String::toLowerCase)
                     .filter(name -> name.startsWith(args[2].toLowerCase()))

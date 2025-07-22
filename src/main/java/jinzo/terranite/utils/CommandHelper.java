@@ -2,6 +2,7 @@ package jinzo.terranite.utils;
 
 import jinzo.terranite.Terranite;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,6 +14,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -83,6 +90,8 @@ public class CommandHelper {
         int changed = 0;
 
         Map<Location, Material> snapshot = new HashMap<>();
+        Map<Material, Integer> notifiedCount = new HashMap<>();
+        Map<Material, Location> firstLocation = new HashMap<>();
 
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
@@ -92,9 +101,36 @@ public class CommandHelper {
                         snapshot.put(block.getLocation(), block.getType());
                         block.setType(material);
                         changed++;
+
+                        // Log notification if it's a notified block
+                        if (Terranite.getInstance().getConfiguration().notifiedMaterials.contains(material)) {
+                            notifiedCount.merge(material, 1, Integer::sum);
+                            firstLocation.putIfAbsent(material, block.getLocation());
+                        }
                     }
                 }
             }
+        }
+
+        // Bypass logging
+        if (player.hasPermission("terranite.exempt.notifiedBlocks")) return changed;
+
+        // Log notifications for notified materials
+        for (Map.Entry<Material, Integer> entry : notifiedCount.entrySet()) {
+            Material mat = entry.getKey();
+            int count = entry.getValue();
+            Location loc = firstLocation.get(mat);
+
+            String message = String.format(
+                    "[Terra] %s placed %d blocks of %s (example at %s,%s,%s in %s)",
+                    player.getName(),
+                    count,
+                    mat.name(),
+                    loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
+                    loc.getWorld().getName()
+            );
+
+            logMessage(player, message);
         }
 
         if (!snapshot.isEmpty()) {
@@ -126,6 +162,10 @@ public class CommandHelper {
         int changed = 0;
         Map<Location, Material> snapshot = new HashMap<>();
 
+        // For notification tracking
+        Map<Material, Integer> notifiedCount = new HashMap<>();
+        Map<Material, Location> firstLocation = new HashMap<>();
+
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
@@ -135,9 +175,35 @@ public class CommandHelper {
                     if (didChange) {
                         snapshot.put(block.getLocation(), before);
                         changed++;
+
+                        if (Terranite.getInstance().getConfiguration().notifiedMaterials.contains(block.getType())) {
+                            Material after = block.getType();
+                            notifiedCount.merge(after, 1, Integer::sum);
+                            firstLocation.putIfAbsent(after, block.getLocation());
+                        }
                     }
                 }
             }
+        }
+
+        // Bypass logging
+        if (player.hasPermission("terranite.exempt.notifiedBlocks")) return changed;
+
+        // Log notifications for notified materials
+        for (Map.Entry<Material, Integer> entry : notifiedCount.entrySet()) {
+            Material mat = entry.getKey();
+            int count = entry.getValue();
+            Location loc = firstLocation.get(mat);
+
+            String message = String.format(
+                    "[Terra] %s placed %d blocks of %s (example at %d,%d,%d in %s)",
+                    player.getName(),
+                    count,
+                    mat.name(),
+                    loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
+                    loc.getWorld().getName()
+            );
+            logMessage(player, message);
         }
 
         if (!snapshot.isEmpty()) {
@@ -186,10 +252,59 @@ public class CommandHelper {
 
     public static boolean checkSelectionSize(Player player, long volume) {
         int maxSelectionSize = Terranite.getInstance().getConfiguration().maxSelectionSize;
-        if (maxSelectionSize != -1 && volume > maxSelectionSize) {
+        if (maxSelectionSize != -1 && !player.hasPermission("terranite.exempt.selection") && volume > maxSelectionSize) {
             sendError(player, "Selection too large. Limit is " + maxSelectionSize + " blocks.");
             return false;
         }
         return true;
+    }
+
+    public static boolean checkMaterialBlocked(Player player, Material material) {
+        if (material == null || !material.isBlock()) return false;
+        if (player.hasPermission("terranite.exempt.blockedBlocks"))
+            return false;
+
+        if (Terranite.getInstance().getConfiguration().blockedMaterials.contains(material)) {
+            sendError(player, "This block is forbidden to use.");
+            return true;
+        }
+        return false;
+    }
+
+    public static void playSound(Player player, Location location) {
+        if (!Terranite.getInstance().getConfiguration().playSound) return;
+
+        // Play effect if enabled in config
+        player.playSound(location, Terranite.getInstance().getConfiguration().selectSound, 1.0f, 1.6f);
+    }
+
+    public static void logMessage(Player player, String message) {
+        // Always log to console
+        Bukkit.getLogger().info(message);
+
+        if (!Terranite.getInstance().getConfiguration().logNotifications) return;
+
+        try {
+            // Create logs/users directory
+            File usersDir = new File(Terranite.getInstance().getDataFolder(), "logs");
+            if (!usersDir.exists()) usersDir.mkdirs();
+
+            // File per player by UUID
+            File logFile = new File(usersDir, player.getUniqueId() + ".log");
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+            String timestamp = "[" + LocalDateTime.now().format(formatter) + "] ";
+
+            try (FileWriter fw = new FileWriter(logFile, true);
+                 BufferedWriter bw = new BufferedWriter(fw)) {
+
+                String logLine = timestamp + message.substring(7);
+                bw.write(logLine);
+                bw.newLine();
+            }
+
+        } catch (IOException e) {
+            Bukkit.getLogger().warning("[Terra] Failed to write user log for " + player.getName() + ": " + e.getMessage());
+        }
     }
 }

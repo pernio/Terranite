@@ -1,6 +1,8 @@
 package jinzo.terranite.events;
 
+import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
+import jinzo.terranite.utils.ConfigManager;
 import jinzo.terranite.utils.SelectionManager;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -42,7 +44,7 @@ public class OutlineTask {
 
                     if (edges >= 2) {
                         Location loc = new Location(player.getWorld(), x + 0.5, y + 0.5, z + 0.5);
-                        player.spawnParticle(Particle.HAPPY_VILLAGER, loc, 1, 0, 0, 0, 0);
+                        player.spawnParticle(Terranite.getInstance().getConfiguration().outlineEffect, loc, 1, 0, 0, 0, 0);
                     }
                 }
             }

@@ -38,12 +38,7 @@ public class replaceTerra {
             return false;
         }
 
-        var config = Terranite.getInstance().getConfiguration();
-
-        if (config.blockedMaterials.contains(replacement)) {
-            CommandHelper.sendError(player, "This block is forbidden to use");
-            return false;
-        }
+        if (CommandHelper.checkMaterialBlocked(player, replacement)) return false;
 
         int changed = CommandHelper.modifySelection(player, replacement, block -> block.getType() == target);
 

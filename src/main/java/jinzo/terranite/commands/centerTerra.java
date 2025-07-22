@@ -1,6 +1,5 @@
 package jinzo.terranite.commands;
 
-import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
 import org.bukkit.Material;
 import org.bukkit.Location;
@@ -29,10 +28,7 @@ public class centerTerra {
             return false;
         }
 
-        if (Terranite.getInstance().getConfiguration().blockedMaterials.contains(material)) {
-            CommandHelper.sendError(player, "This block is forbidden to use");
-            return false;
-        }
+        if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
         var selection = jinzo.terranite.utils.SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) {

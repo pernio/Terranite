@@ -1,6 +1,5 @@
 package jinzo.terranite.commands;
 
-import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
 import jinzo.terranite.utils.SelectionManager;
 import org.bukkit.Location;
@@ -33,12 +32,7 @@ public class generateTerra {
             return false;
         }
 
-        var config = Terranite.getInstance().getConfiguration();
-
-        if (config.blockedMaterials.contains(material)) {
-            CommandHelper.sendError(player, "This block is forbidden to use");
-            return false;
-        }
+        if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
         var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) {

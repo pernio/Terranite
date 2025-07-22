@@ -3,6 +3,7 @@ package jinzo.terranite.commands;
 import jinzo.terranite.utils.CommandHelper;
 import jinzo.terranite.utils.SelectionManager;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -65,6 +66,7 @@ public class posTerra {
         }
 
         showOutline(player, targetBlock);
+        CommandHelper.playSound(player, targetBlock);
 
         return true;
     }
