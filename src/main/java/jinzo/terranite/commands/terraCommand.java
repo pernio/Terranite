@@ -61,7 +61,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 0) {
-            CommandHelper.sendError(sender, "Usage: /s <subcommand>");
+            CommandHelper.sendError(sender, "Usage: //<subcommand>");
             return false;
         }
 
@@ -125,7 +125,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                                 sendSpecificConfigInfo(player, args[2]);
                                 return true;
                             } else {
-                                CommandHelper.sendError(player, "Usage: /s config info [key]");
+                                CommandHelper.sendError(player, "Usage: //config info [key]");
                                 return false;
                             }
                         }
@@ -135,7 +135,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                         }
                     }
                 } else {
-                    CommandHelper.sendError(sender, "Usage: /s config <reload|info>");
+                    CommandHelper.sendError(sender, "Usage: //config <reload|info>");
                     return false;
                 }
             }
@@ -173,6 +173,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
     private List<String> completeCommand(Player player, String cmdName, String[] args) {
         var config = plugin.getConfiguration();
         Set<Material> blockedMaterials = config.blockedMaterials;
+        boolean inverted = Terranite.getInstance().getConfiguration().excludeBlockedBlocks;
         boolean exempt = player.hasPermission("terranite.exempt.blockedBlocks");
 
         if (args.length == 0) return List.of();
@@ -218,7 +219,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                 case "set", "fill", "center" -> {
                     return Stream.of(Material.values())
                             .filter(Material::isBlock)
-                            .filter(m -> exempt || !blockedMaterials.contains(m))
+                            .filter(m -> exempt || inverted == blockedMaterials.contains(m))
                             .map(Material::name)
                             .map(String::toLowerCase)
                             .filter(name -> name.startsWith(args[1].toLowerCase()))
@@ -263,7 +264,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             if (args.length == 3) {
                 return Stream.of(Material.values())
                         .filter(Material::isBlock)
-                        .filter(m -> exempt || !blockedMaterials.contains(m))
+                        .filter(m -> exempt || inverted == blockedMaterials.contains(m))
                         .map(Material::name)
                         .map(String::toLowerCase)
                         .filter(name -> name.startsWith(args[2].toLowerCase()))
@@ -275,7 +276,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
         if (subcommand.equals("generate") && args.length == 3) {
             return Stream.of(Material.values())
                     .filter(Material::isBlock)
-                    .filter(m -> exempt || !blockedMaterials.contains(m))
+                    .filter(m -> exempt || inverted == blockedMaterials.contains(m))
                     .map(Material::name)
                     .map(String::toLowerCase)
                     .filter(name -> name.startsWith(args[2].toLowerCase()))
@@ -344,7 +345,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
         CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnPickup", config.deleteWandOnPickup));
         CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnShot", config.deleteWandOnShot));
         CommandHelper.sendInfo(player, formatConfigEntry("allowMultipleWands", config.allowMultipleWands));
-        CommandHelper.sendInfo(player, ChatColor.GRAY + "For listed block details: \"/s config info blockedBlocks\"");
+        CommandHelper.sendInfo(player, ChatColor.GRAY + "For listed block details: \"//config info blockedBlocks\"");
     }
 
     private void sendSpecificConfigInfo(Player player, String keyRaw) {

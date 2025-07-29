@@ -18,7 +18,7 @@ public class centerTerra {
         }
 
         if (args.length != 2) {
-            CommandHelper.sendError(player, "Usage: /s center <block>");
+            CommandHelper.sendError(player, "Usage: //center <block>");
             return false;
         }
 

@@ -29,14 +29,14 @@ public class saveTerra {
         }
 
         if (args.length < 2) {
-            CommandHelper.sendError(player, "Usage: /s save <name>");
+            CommandHelper.sendError(player, "Usage: //save <name>");
             return false;
         }
 
         String name = args[1];
 
         if (!ClipboardManager.hasClipboard(player.getUniqueId())) {
-            CommandHelper.sendError(player, "Clipboard is empty. Use /s copy or /s cut first.");
+            CommandHelper.sendError(player, "Clipboard is empty. Use //copy or //cut first.");
             return false;
         }
 
@@ -47,7 +47,7 @@ public class saveTerra {
                 name,
                 blocks,
                 clipboardData.origin(),
-                player.getUniqueId() // Pass UUID of creator
+                player.getUniqueId()
         );
         if (success) {
             CommandHelper.sendSuccess(player, "Schematic saved as '" + name + "'");

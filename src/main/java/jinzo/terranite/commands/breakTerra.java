@@ -45,7 +45,7 @@ public class breakTerra {
         if (result == -2) return false;
 
         CommandHelper.checkClearSelection(player);
-        CommandHelper.sendSuccess(player, "Deleted " + result + " block(s).");
+        CommandHelper.sendSuccess(player, "Deleted " + result + (result == 1 ? " block." : " blocks."));
         return true;
     }
 }

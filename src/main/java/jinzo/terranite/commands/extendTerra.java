@@ -19,7 +19,7 @@ public class extendTerra {
         }
 
         if (args.length < 3) {
-            CommandHelper.sendError(player, "Usage: /s extend <direction> <range>");
+            CommandHelper.sendError(player, "Usage: //extend <direction> <range>");
             return false;
         }
 
@@ -36,7 +36,7 @@ public class extendTerra {
 
         var selection = SelectionManager.getSelection(player);
         if (selection == null || selection.pos1 == null || selection.pos2 == null) {
-            CommandHelper.sendError(player, "You must have a valid selection with both positions set.");
+            CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
             return false;
         }
 
@@ -88,7 +88,7 @@ public class extendTerra {
             }
         }
 
-        CommandHelper.sendSuccess(player,"Selection extended " + direction + " by " + range + " blocks.");
+        CommandHelper.sendSuccess(player,"Selection extended " + direction + " by " + range + (range == 1 ? " block." : " blocks."));
         return true;
     }
 }

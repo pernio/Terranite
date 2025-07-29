@@ -21,7 +21,7 @@ public class replaceTerra {
         }
 
         if (args.length < 3) {
-            CommandHelper.sendError(player, "Usage: /s replace <target_block> <new_block>");
+            CommandHelper.sendError(player, "Usage: //replace <target_block> <new_block>");
             return false;
         }
 

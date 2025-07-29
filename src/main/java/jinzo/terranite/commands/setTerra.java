@@ -21,7 +21,7 @@ public class setTerra {
         }
 
         if (args.length < 2) {
-            CommandHelper.sendError(player, "Usage: /s set <block>");
+            CommandHelper.sendError(player, "Usage: //set <block>");
             return false;
         }
 

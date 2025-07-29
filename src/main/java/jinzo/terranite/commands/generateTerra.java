@@ -20,7 +20,7 @@ public class generateTerra {
         }
 
         if (args.length != 3) {
-            CommandHelper.sendError(player, "Usage: /s generate <box|hollow_box|sphere|hollow_sphere> <block>");
+            CommandHelper.sendError(player, "Usage: //generate <box|hollow_box|sphere|hollow_sphere> <block>");
             return false;
         }
 
@@ -119,7 +119,7 @@ public class generateTerra {
         }
 
         CommandHelper.checkClearSelection(player);
-        CommandHelper.sendSuccess(player, "Generated " + shape + " with " + changed + " blocks.");
+        CommandHelper.sendSuccess(player, "Generated " + shape + " with " + changed + (changed == 1 ? " block." : " blocks."));
         return true;
     }
 }

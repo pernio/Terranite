@@ -102,5 +102,5 @@ play_sound: false
 
 # Sound of selection - Default: BLOCK_NOTE_BLOCK_PLING.
 select_sound: BLOCK_NOTE_BLOCK_PLING
-# Complete effect list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
+
 # Complete sound list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html

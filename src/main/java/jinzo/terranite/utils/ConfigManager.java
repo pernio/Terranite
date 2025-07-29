@@ -14,6 +14,8 @@ public class ConfigManager {
     private final Terranite plugin;
 
     public int maxSelectionSize;
+    public boolean excludeBlockedBlocks = false;
+    public boolean excludeNotifiedBlocks = false;
     public List<String> blockedBlocks;
     public List<String> notifiedBlocks;
     public final Set<Material> blockedMaterials = new HashSet<>();
@@ -52,6 +54,8 @@ public class ConfigManager {
         FileConfiguration cfg = plugin.getConfig();
 
         maxSelectionSize = cfg.getInt("max_selection_size", 500_000);
+        excludeBlockedBlocks = cfg.getBoolean("exclude_blocked_blocks", false);
+        excludeNotifiedBlocks = cfg.getBoolean("exclude_notified_blocks", false);
 
         selectEffectColor = cfg.getString("select_effect_color", "FUCHSIA").toUpperCase();
         selectEffectDust = createDustOptions(selectEffectColor);

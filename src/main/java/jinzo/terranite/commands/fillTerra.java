@@ -16,7 +16,7 @@ public class fillTerra {
         }
 
         if (args.length < 2) {
-            CommandHelper.sendError(player, "Usage: /s fill <block>");
+            CommandHelper.sendError(player, "Usage: //fill <block>");
             return false;
         }
 

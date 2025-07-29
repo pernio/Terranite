@@ -68,6 +68,7 @@ public class CommandHelper {
 
         var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) return -1;
+        boolean inverted = Terranite.getInstance().getConfiguration().excludeNotifiedBlocks;
 
         Location loc1 = selection.pos1;
         Location loc2 = selection.pos2;
@@ -100,7 +101,7 @@ public class CommandHelper {
                         changed++;
 
                         // Log notification if it's a notified block
-                        if (Terranite.getInstance().getConfiguration().notifiedMaterials.contains(material)) {
+                        if (inverted != Terranite.getInstance().getConfiguration().notifiedMaterials.contains(material)) {
                             notifiedCount.merge(material, 1, Integer::sum);
                             firstLocation.putIfAbsent(material, block.getLocation());
                         }
@@ -140,6 +141,7 @@ public class CommandHelper {
     public static int modifySelection(Player player, BlockModifier modifier) {
         var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) return -1;
+        boolean inverted = Terranite.getInstance().getConfiguration().excludeNotifiedBlocks;
 
         Location loc1 = selection.pos1;
         Location loc2 = selection.pos2;
@@ -173,7 +175,7 @@ public class CommandHelper {
                         snapshot.put(block.getLocation(), before);
                         changed++;
 
-                        if (Terranite.getInstance().getConfiguration().notifiedMaterials.contains(block.getType())) {
+                        if (inverted != Terranite.getInstance().getConfiguration().notifiedMaterials.contains(block.getType())) {
                             Material after = block.getType();
                             notifiedCount.merge(after, 1, Integer::sum);
                             firstLocation.putIfAbsent(after, block.getLocation());
@@ -250,7 +252,7 @@ public class CommandHelper {
     public static boolean checkSelectionSize(Player player, long volume) {
         int maxSelectionSize = Terranite.getInstance().getConfiguration().maxSelectionSize;
         if (maxSelectionSize != -1 && !player.hasPermission("terranite.exempt.selection") && volume > maxSelectionSize) {
-            sendError(player, "Selection too large. Limit is " + maxSelectionSize + " blocks.");
+            sendError(player, "Selection too large. Limit is " + maxSelectionSize + (maxSelectionSize == 1 ? " block." : " blocks."));
             return false;
         }
         return true;
@@ -258,10 +260,11 @@ public class CommandHelper {
 
     public static boolean checkMaterialBlocked(Player player, Material material) {
         if (material == null || !material.isBlock()) return false;
+        boolean inverted = Terranite.getInstance().getConfiguration().excludeBlockedBlocks;
         if (player.hasPermission("terranite.exempt.blockedBlocks"))
             return false;
 
-        if (Terranite.getInstance().getConfiguration().blockedMaterials.contains(material)) {
+        if (inverted != Terranite.getInstance().getConfiguration().blockedMaterials.contains(material)) {
             sendError(player, "This block is forbidden to use.");
             return true;
         }
@@ -270,13 +273,6 @@ public class CommandHelper {
 
     public static void checkClearSelection(Player player) {
         // Clear selection after command if enabled in config
-        if (Terranite.getInstance().getConfiguration().clearSelectionAfterCommand) {
-            SelectionManager.clearSelection(player);
-        }
-    }
-
-    public static void finishCommand(Player player) {
-        // Clear selection if enabled in config
         if (Terranite.getInstance().getConfiguration().clearSelectionAfterCommand) {
             SelectionManager.clearSelection(player);
         }

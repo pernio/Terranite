@@ -23,7 +23,7 @@ public class posTerra {
         }
 
         if (args.length < 2) {
-            CommandHelper.sendError(player, "Usage: /s pos <1|2> [x] [y] [z]");
+            CommandHelper.sendError(player, "Usage: //pos <1|2> [x] [y] [z]");
             return false;
         }
 

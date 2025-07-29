@@ -23,7 +23,7 @@ public class AliasCommandExecutor implements CommandExecutor, TabCompleter {
         System.arraycopy(args, 0, newArgs, 1, args.length);
 
         return Terranite.getInstance()
-                .getCommand("s")
+                .getCommand("terranite")
                 .getExecutor()
                 .onCommand(sender, command, label, newArgs);
     }
@@ -36,7 +36,7 @@ public class AliasCommandExecutor implements CommandExecutor, TabCompleter {
         System.arraycopy(args, 0, newArgs, 1, args.length);
 
         return Terranite.getInstance()
-                .getCommand("s")
+                .getCommand("terranite")
                 .getTabCompleter()
                 .onTabComplete(sender, command, alias, newArgs);
     }

@@ -2,7 +2,6 @@ package jinzo.terranite.utils;
 
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.UUID;

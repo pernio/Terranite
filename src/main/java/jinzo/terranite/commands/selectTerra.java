@@ -1,5 +1,6 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.utils.OutlineTaskManager;
 import jinzo.terranite.utils.SelectionManager;
 import jinzo.terranite.utils.CommandHelper;
 import org.bukkit.Location;
@@ -22,7 +23,7 @@ public class selectTerra {
         }
 
         if (args.length != 2 || !args[0].equalsIgnoreCase("select")) {
-            CommandHelper.sendError(player, "Usage: /s select <radius>");
+            CommandHelper.sendError(player, "Usage: //select <radius>");
             return false;
         }
 
@@ -58,6 +59,8 @@ public class selectTerra {
         CommandHelper.sendSuccess(player, String.format("Selected box from (%d, %d, %d) to (%d, %d, %d)",
                 (int) pos1.getX(), (int) pos1.getY(), (int) pos1.getZ(),
                 (int) pos2.getX(), (int) pos2.getY(), (int) pos2.getZ()));
+
+        OutlineTaskManager.start(player);
 
         return true;
     }

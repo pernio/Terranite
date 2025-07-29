@@ -54,7 +54,7 @@ public class PickupListener implements Listener {
 
         Component msg = Component.text("You lost your Terra Wand. ", NamedTextColor.RED)
                 .append(Component.text("Click here to get it back.", NamedTextColor.YELLOW)
-                        .clickEvent(ClickEvent.runCommand("/s wand")));
+                        .clickEvent(ClickEvent.runCommand("//wand")));
 
         player.sendMessage(msg);
     }
