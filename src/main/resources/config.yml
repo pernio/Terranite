@@ -9,6 +9,10 @@
 # |                     Security settings                       |
 # +-------------------------------------------------------------+
 
+# Lockdown mode of the wand.
+# When true, no one can use the wand, including players with terranite.admin permission.
+lockdown: false
+
 # Exclude listed blocks from blocked_blocks.
 # When true, all blocks will be blocked, except for those listed in blocked_blocks.
 exclude_blocked_blocks: false
@@ -72,6 +76,8 @@ hide_selection_when_holding_other_item: true
 # +-------------------------------------------------------------+
 # |                       Wand settings                         |
 # +-------------------------------------------------------------+
+
+#
 
 # If a player should be able to summon multiple wands.
 allow_multiple_wands: false

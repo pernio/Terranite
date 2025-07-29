@@ -55,6 +55,11 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
+        if (plugin.getConfiguration().lockdown) {
+            CommandHelper.sendError(player, "Terranite is currently in lockdown mode. Commands are disabled.");
+            return false;
+        }
+
         if (!player.hasPermission("terranite.use")) {
             CommandHelper.sendError(player, "You do not have permission to use Terranite.");
             return false;

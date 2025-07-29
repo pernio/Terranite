@@ -1,5 +1,6 @@
 package jinzo.terranite.listeners;
 
+import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.OutlineTaskManager;
 import jinzo.terranite.utils.SelectionManager;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        if (Terranite.getInstance().getConfiguration().lockdown) return;
         Player player = event.getPlayer();
         var sel = SelectionManager.getSelection(player);
 

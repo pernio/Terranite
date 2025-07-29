@@ -20,6 +20,7 @@ public class SelectionListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (event.getClickedBlock() == null) return;
+        if (Terranite.getInstance().getConfiguration().lockdown) return;
         if (!event.getPlayer().hasPermission("terranite.use")) return;
 
         Player player = event.getPlayer();

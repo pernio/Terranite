@@ -13,6 +13,7 @@ import java.util.*;
 public class ConfigManager {
     private final Terranite plugin;
 
+    public boolean lockdown = false;
     public int maxSelectionSize;
     public boolean excludeBlockedBlocks = false;
     public boolean excludeNotifiedBlocks = false;
@@ -53,6 +54,7 @@ public class ConfigManager {
         plugin.reloadConfig();
         FileConfiguration cfg = plugin.getConfig();
 
+        lockdown = cfg.getBoolean("lockdown", false);
         maxSelectionSize = cfg.getInt("max_selection_size", 500_000);
         excludeBlockedBlocks = cfg.getBoolean("exclude_blocked_blocks", false);
         excludeNotifiedBlocks = cfg.getBoolean("exclude_notified_blocks", false);
