@@ -25,18 +25,11 @@ public class replaceTerra {
             return false;
         }
 
-        Material target = Material.matchMaterial(args[1]);
-        Material replacement = Material.matchMaterial(args[2]);
+        Material target = CommandHelper.findMaterial(player, args[1]);
+        if (target == null) return false;
 
-        if (target == null || !target.isBlock()) {
-            CommandHelper.sendError(player, "Invalid target block: " + args[1]);
-            return false;
-        }
-
-        if (replacement == null || !replacement.isBlock()) {
-            CommandHelper.sendError(player, "Invalid replacement block: " + args[2]);
-            return false;
-        }
+        Material replacement = CommandHelper.findMaterial(player, args[2]);
+        if (replacement == null) return false;
 
         if (CommandHelper.checkMaterialBlocked(player, replacement)) return false;
 

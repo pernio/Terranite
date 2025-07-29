@@ -24,11 +24,8 @@ public class breakTerra {
 
         Set<Material> targetMaterials = new HashSet<>();
         for (int i = 1; i < args.length; i++) {
-            Material mat = Material.matchMaterial(args[i]);
-            if (mat == null || !mat.isBlock()) {
-                CommandHelper.sendError(player, "Invalid block type: " + args[i]);
-                return false;
-            }
+            Material mat = CommandHelper.findMaterial(player, args[i]);
+            if (mat == null) return false;
             targetMaterials.add(mat);
         }
 

@@ -335,4 +335,28 @@ public class CommandHelper {
 
         return sb.toString().trim();
     }
+
+    public static Material findMaterial(Player player, String name) {
+        Material material = Material.matchMaterial(name);
+        if (material == null || !material.isBlock()) {
+            try {
+                int legacyId = Integer.parseInt(name);
+                LegacyBlockHelper.LegacyBlock legacyBlock = LegacyBlockHelper.findById(legacyId);
+                if (legacyBlock == null) {
+                    CommandHelper.sendError(player, "Invalid block type: " + name);
+                    return null;
+                }
+                // Use the legacy block's name to get the Material
+                material = Material.matchMaterial(legacyBlock.name);
+                if (material == null) {
+                    CommandHelper.sendError(player, "Legacy block not found: " + legacyBlock.name);
+                    return null;
+                }
+            } catch (NumberFormatException e) {
+                CommandHelper.sendError(player, "Invalid block type: " + name);
+                return material;
+            }
+        }
+        return material;
+    }
 }

@@ -20,11 +20,8 @@ public class fillTerra {
             return false;
         }
 
-        Material material = Material.matchMaterial(args[1]);
-        if (material == null || !material.isBlock()) {
-            CommandHelper.sendError(player, "Invalid block type: " + args[1]);
-            return false;
-        }
+        Material material = CommandHelper.findMaterial(player, args[1]);
+        if (material == null) return false;
 
         if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 

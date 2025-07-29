@@ -25,26 +25,8 @@ public class setTerra {
             return false;
         }
 
-        Material material = Material.matchMaterial(args[1]);
-        if (material == null || !material.isBlock()) {
-            try {
-                int legacyId = Integer.parseInt(args[1]);
-                LegacyBlockHelper.LegacyBlock legacyBlock = LegacyBlockHelper.findById(legacyId);
-                if (legacyBlock == null) {
-                    CommandHelper.sendError(player, "Invalid block type: " + args[1]);
-                    return false;
-                }
-                // Use the legacy block's name to get the Material
-                material = Material.matchMaterial(legacyBlock.name);
-                if (material == null) {
-                    CommandHelper.sendError(player, "Legacy block not found: " + legacyBlock.name);
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                CommandHelper.sendError(player, "Invalid block type: " + args[1]);
-                return false;
-            }
-        }
+        Material material = CommandHelper.findMaterial(player, args[1]);
+        if (material == null) return false;
 
         if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 

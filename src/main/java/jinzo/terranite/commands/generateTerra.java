@@ -25,12 +25,8 @@ public class generateTerra {
         }
 
         String shape = args[1].toLowerCase();
-        Material material = Material.matchMaterial(args[2]);
-
-        if (material == null || !material.isBlock()) {
-            CommandHelper.sendError(player, "Invalid block type: " + args[2]);
-            return false;
-        }
+        Material material = CommandHelper.findMaterial(player, args[2]);
+        if (material == null) return false;
 
         if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
