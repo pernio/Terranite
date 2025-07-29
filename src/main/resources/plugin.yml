@@ -1,0 +1,116 @@
+name: Terranite
+version: '1.2.0'
+main: jinzo.terranite.Terranite
+api-version: '1.21'
+commands:
+  s:
+    description: Base command for Terranite
+    aliases: [terra, terranite, selection]
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/config":
+    description: Configuration command for Terranite
+    permission: terranite.admin
+    permission-message: You do not have permission to use this command.
+  "/break":
+    description: Break blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/center":
+    description: Center blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/clear":
+    description: Clear selection command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/copy":
+    description: Copy blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/count":
+    description: Count blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/cut":
+    description: Cut blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/delete":
+    description: Delete schematic command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/extend":
+    description: Extend selection command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/fill":
+    description: Fill blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/generate":
+    description: Generate blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/paste":
+    description: Paste blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/pos":
+    description: Set position command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/redo":
+    description: Redo command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/replace":
+    description: Replace blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/save":
+    description: Save schematic command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/select":
+    description: Select blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/set":
+    description: Set blocks command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/shrink":
+    description: Shrink selection command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/undo":
+    description: Undo command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/wand":
+    description: Wand command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+permissions:
+  terranite.use:
+    description: Allows use of the Terranite base command and its aliases
+    default: op
+  terranite.admin:
+    description: Allows use of administrative commands for Terranite
+    default: op
+  terranite.exempt.*:
+    description: Allows players to bypass all restrictions for Terranite commands
+    default: op
+  terranite.exempt.selection:
+    description: Allows players to bypass selection requirements for Terranite commands
+    default: op
+  terranite.exempt.blockedBlocks:
+    description: Allows players to bypass block requirements for Terranite commands
+    default: op
+  terranite.exempt.notifiedBlocks:
+    description: Allows players to bypass notification requirements for Terranite commands
+    default: op
+  terranite.exempt.cooldown:
+    description: Allows players to bypass command cooldowns for Terranite commands
+    default: op

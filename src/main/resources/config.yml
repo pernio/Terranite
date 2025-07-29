@@ -1,0 +1,106 @@
+# +-------------------------------------------------------------+
+# |                                                             |
+# |                         Terranite                           |
+# |    A folia compatible world editing plugin for Minecraft    |
+# |                                                             |
+# +-------------------------------------------------------------+
+
+# +-------------------------------------------------------------+
+# |                     Security settings                       |
+# +-------------------------------------------------------------+
+
+# Exclude listed blocks from blocked_blocks.
+# When true, all blocks will be blocked, except for those listed in blocked_blocks.
+exclude_blocked_blocks: false
+
+# Exclude listed blocks from notified_blocks.
+# When true, all blocks will be notified, except for those listed in notified_blocks.
+exclude_notified_blocks: false
+
+# Blocks that cannot be pasted, set, filled, replaced, etc.
+blocked_blocks:
+  - bedrock
+  - barrier
+  - end_portal_frame
+  - command_block
+  - repeating_command_block
+  - chain_command_block
+  - structure_block
+  - structure_void
+  - spawner
+  - dragon_egg
+  - dragon_head
+
+# Blocks that give a notification to the console when used.
+notified_blocks:
+  - bedrock
+  - barrier
+  - end_portal_frame
+  - command_block
+  - repeating_command_block
+  - chain_command_block
+  - structure_block
+  - structure_void
+  - spawner
+  - dragon_egg
+  - dragon_head
+
+# Log notifications to a file.
+log_notifications: false
+
+# If everyone should be able to delete any saved schematic.
+# If false, only the player who saved the schematic can delete it.
+# terranite.admin permission bypasses this setting.
+safe_delete_schematics: true
+
+# +-------------------------------------------------------------+
+# |                     Selection settings                      |
+# +-------------------------------------------------------------+
+
+# Maximum amount of blocks that can be selected at once. -1 for no limit.
+max_selection_size: 500_000
+
+# Command cooldown in seconds.
+command_cooldown: 0
+
+# If the selection should be cleared after a command is executed.
+clear_selection_after_command: false
+
+# If the selection should hide when the player holds a different item.
+hide_selection_when_holding_other_item: true
+
+# +-------------------------------------------------------------+
+# |                       Wand settings                         |
+# +-------------------------------------------------------------+
+
+# If a player should be able to summon multiple wands.
+allow_multiple_wands: false
+
+# If the wand should delete itself when dropped.
+delete_wand_on_drop: true
+
+# If the wand should delete itself when the player stores it in a container.
+delete_wand_on_store: true
+
+# If the wand should delete itself when any player picks it up.
+delete_wand_on_pickup: true
+
+# If the wand should delete itself when shot with a (cross)bow.
+delete_wand_on_shot: true
+
+# Color of selection - Default: FUCHSIA.
+select_effect_color: FUCHSIA
+
+# Color of constant outline - Default: FUCHSIA.
+outline_effect_color: FUCHSIA
+
+# How fast the outline should tick - Between 1 and 4 (1 = slowest, 4 = fastest).
+outline_effect_speed: 4
+
+# Play sound when a selection is made.
+play_sound: false
+
+# Sound of selection - Default: BLOCK_NOTE_BLOCK_PLING.
+select_sound: BLOCK_NOTE_BLOCK_PLING
+# Complete effect list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
+# Complete sound list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
