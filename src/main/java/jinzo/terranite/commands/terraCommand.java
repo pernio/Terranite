@@ -33,7 +33,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
     public static final List<String> SUBCOMMANDS = List.of(
             "wand", "pos", "copy", "cut", "paste",
-            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "schematic", "sc", "generate", "config", "extend", "shrink", "break", "set"
+            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "schematic", "sc", "generate", "config", "extend", "shrink", "break", "set", "move"
     );
     private static final List<String> ADMINSUBCOMMANDS = List.of("config");
 
@@ -75,7 +75,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        if (!player.hasPermission("terranite.use")) {
+        if (player != null && !player.hasPermission("terranite.use")) {
             CommandHelper.sendError(player, "You do not have permission to use Terranite.");
             return false;
         }
@@ -114,6 +114,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             case "generate" -> result = generateTerra.onCommand(sender, command, label, args);
             case "extend" -> result = extendTerra.onCommand(sender, command, label, args);
             case "shrink" -> result = shrinkTerra.onCommand(sender, command, label, args);
+            case "move" -> result = moveTerra.onCommand(sender, command, label, args);
             case "config" -> {
                 if (args.length >= 2) {
                     String configSub = args[1].toLowerCase();
@@ -281,7 +282,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                 case "generate" -> {
                     return List.of("box", "hollow_box", "sphere", "hollow_sphere");
                 }
-                case "extend", "shrink" -> {
+                case "extend", "shrink", "move" -> {
                     return Stream.of("north", "south", "east", "west", "up", "down")
                             .filter(dir -> dir.startsWith(args[1].toLowerCase()))
                             .toList();
@@ -352,7 +353,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        if ((subcommand.equals("extend") || subcommand.equals("shrink")) && args.length == 3) {
+        if ((subcommand.equals("extend") || subcommand.equals("shrink")) || subcommand.equals("move") && args.length == 3) {
             return Stream.of("1", "2", "5", "10", "20")
                     .filter(num -> num.startsWith(args[2].toLowerCase()))
                     .toList();
