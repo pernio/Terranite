@@ -4,6 +4,8 @@ import jinzo.terranite.Terranite;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +14,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.block.data.type.Stairs;
 import org.bukkit.NamespacedKey;
 
 import java.io.BufferedWriter;
@@ -69,7 +72,6 @@ public class CommandHelper {
      * @return number of blocks changed, -1 if positions are not set, -2 if selection is too large
      */
     public static int modifySelection(Player player, Material material, Predicate<Block> filter) {
-
         var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) return -1;
         boolean inverted = Terranite.getInstance().getConfiguration().excludeNotifiedBlocks;
@@ -95,13 +97,35 @@ public class CommandHelper {
         Map<Material, Integer> notifiedCount = new HashMap<>();
         Map<Material, Location> firstLocation = new HashMap<>();
 
+        // Get player's facing direction once
+        BlockFace playerFacing = getPlayerFacing(player);
+        BlockFace oppositeFacing = getOppositeFace(playerFacing);
+
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
                     Block block = world.getBlockAt(x, y, z);
                     if (filter.test(block)) {
                         snapshot.put(block.getLocation(), block.getType());
+
+                        // Set the block type first
                         block.setType(material);
+
+                        // If the block is directional, set its facing
+                        if (block.getBlockData() instanceof Directional) {
+                            Directional directional = (Directional) block.getBlockData();
+
+                            // Special case for stairs - face same direction as player
+                            if (block.getBlockData() instanceof Stairs) {
+                                directional.setFacing(playerFacing);
+                            } else {
+                                // All other directional blocks face opposite direction
+                                directional.setFacing(oppositeFacing);
+                            }
+
+                            block.setBlockData(directional);
+                        }
+
                         changed++;
 
                         // Log notification if it's a notified block
@@ -140,6 +164,33 @@ public class CommandHelper {
         }
 
         return changed;
+    }
+
+    private static BlockFace getPlayerFacing(Player player) {
+        float yaw = player.getLocation().getYaw();
+        if (yaw < 0) {
+            yaw += 360;
+        }
+
+        if (yaw >= 315 || yaw < 45) {
+            return BlockFace.SOUTH;
+        } else if (yaw < 135) {
+            return BlockFace.WEST;
+        } else if (yaw < 225) {
+            return BlockFace.NORTH;
+        } else {
+            return BlockFace.EAST;
+        }
+    }
+
+    private static BlockFace getOppositeFace(BlockFace face) {
+        switch (face) {
+            case NORTH: return BlockFace.SOUTH;
+            case SOUTH: return BlockFace.NORTH;
+            case EAST: return BlockFace.WEST;
+            case WEST: return BlockFace.EAST;
+            default: return face; // return same face if not cardinal direction
+        }
     }
 
     public static int modifySelection(Player player, BlockModifier modifier) {
