@@ -1,6 +1,7 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.Terranite;
+import jinzo.terranite.cancelTerra;
 import jinzo.terranite.commands.schematic.deleteTerra;
 import jinzo.terranite.commands.schematic.saveTerra;
 import jinzo.terranite.commands.schematic.listTerra;
@@ -34,7 +35,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
     public static final List<String> SUBCOMMANDS = List.of(
             "wand", "pos", "copy", "cut", "paste",
-            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "schematic", "sc", "generate", "config", "extend", "shrink", "break", "set", "move"
+            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "schematic", "sc", "generate", "config", "extend", "shrink", "break", "set", "move", "apply", "cancel"
     );
     private static final List<String> ADMINSUBCOMMANDS = List.of("config");
 
@@ -112,6 +113,8 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             case "extend" -> result = extendTerra.onCommand(sender, command, label, args);
             case "shrink" -> result = shrinkTerra.onCommand(sender, command, label, args);
             case "move" -> result = moveTerra.onCommand(sender, command, label, args);
+            case "apply" -> result = applyTerra.onCommand(sender);
+            case "cancel" -> result = cancelTerra.onCommand(sender);
             case "config" -> {
                 if (args.length >= 2) {
                     String configSub = args[1].toLowerCase();
@@ -344,20 +347,26 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        if (subcommand.equals("generate") && args.length == 3) {
-            return Stream.of(Material.values())
-                    .filter(Material::isBlock)
-                    .filter(m -> exempt || inverted == blockedMaterials.contains(m))
-                    .flatMap(material -> Stream.of(
-                            material.name().toLowerCase(),                    // e.g., "stone"
-                            "minecraft:" + material.name().toLowerCase()     // e.g., "minecraft:stone"
-                    ))
-                    .filter(name -> name.startsWith(args[2].toLowerCase()))
-                    .distinct()
-                    .sorted(Comparator.comparing((String name) -> name.startsWith("minecraft:") ? 1 : 0)
-                            .thenComparing(String::compareTo))
-                    .limit(20)
-                    .collect(Collectors.toList());
+        if (args.length == 3) {
+            if (subcommand.equals("generate")) {
+                return Stream.of(Material.values())
+                        .filter(Material::isBlock)
+                        .filter(m -> exempt || inverted == blockedMaterials.contains(m))
+                        .flatMap(material -> Stream.of(
+                                material.name().toLowerCase(),                    // e.g., "stone"
+                                "minecraft:" + material.name().toLowerCase()     // e.g., "minecraft:stone"
+                        ))
+                        .filter(name -> name.startsWith(args[2].toLowerCase()))
+                        .distinct()
+                        .sorted(Comparator.comparing((String name) -> name.startsWith("minecraft:") ? 1 : 0)
+                                .thenComparing(String::compareTo))
+                        .limit(20)
+                        .collect(Collectors.toList());
+            }
+
+            if (subcommand.equals("set")) {
+                return List.of("#preview");
+            }
         }
 
         if (subcommand.equals("pos") && args.length >= 3 && args.length <= 5) {

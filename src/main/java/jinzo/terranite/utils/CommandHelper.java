@@ -410,4 +410,21 @@ public class CommandHelper {
         }
         return material;
     }
+
+    public static int previewSelection(Player player, Material material, Predicate<Block> filter) {
+        SelectionManager.Selection sel = SelectionManager.getSelection(player);
+        if (!sel.isComplete()) return -1;
+
+        Map<Location, Material> previewMap = new HashMap<>();
+        for (Location loc : sel.getLocations()) {
+            if (filter.test(loc.getBlock())) {
+                previewMap.put(loc, material);
+            }
+        }
+
+        if (previewMap.isEmpty()) return -2;
+
+        PreviewManager.preview(player, previewMap);
+        return previewMap.size();
+    }
 }

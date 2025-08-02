@@ -8,6 +8,14 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import jinzo.terranite.utils.LegacyBlockHelper;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import org.bukkit.entity.Player;
+
 public class setTerra {
     public static boolean onCommand(
             @NotNull CommandSender sender,
@@ -21,7 +29,7 @@ public class setTerra {
         }
 
         if (args.length < 2) {
-            CommandHelper.sendError(player, "Usage: //set <block>");
+            CommandHelper.sendError(player, "Usage: //set <block> [#preview]");
             return false;
         }
 
@@ -30,18 +38,40 @@ public class setTerra {
 
         if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
-        int changed = CommandHelper.modifySelection(player, material, block -> true);
+        boolean isPreview = args.length >= 3 && args[2].equalsIgnoreCase("#preview");
+
+        int changed;
+        if (isPreview) {
+            changed = CommandHelper.previewSelection(player, material, block -> true);
+            if (changed > 0) {
+                Component message = Component.text("Previewed " + changed + " blocks as " + material.name().toLowerCase() + ".\n")
+                        .append(Component.text("[ //apply ]")
+                                .color(NamedTextColor.GREEN)
+                                .clickEvent(ClickEvent.runCommand("//apply"))
+                                .hoverEvent(HoverEvent.showText(Component.text("Click to apply the previewed blocks"))))
+                        .append(Component.space())
+                        .append(Component.text("[ //cancel ]")
+                                .color(NamedTextColor.RED)
+                                .clickEvent(ClickEvent.runCommand("//cancel"))
+                                .hoverEvent(HoverEvent.showText(Component.text("Click to cancel the preview"))));
+
+                player.sendMessage(message);
+            }
+        } else {
+            changed = CommandHelper.modifySelection(player, material, block -> true);
+            if (changed > 0) {
+                CommandHelper.sendSuccess(player, "Set " + changed + (changed == 1 ? " block" : " blocks") + " to " + material.name().toLowerCase() + ".");
+            }
+        }
 
         if (changed == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
             return false;
         } else if (changed == -2 || changed == -3) {
             return false;
-        } else {
-            CommandHelper.checkClearSelection(player);
-            CommandHelper.sendSuccess(player, "Set " + changed + (changed == 1 ? " block" : " blocks") + " to " + material.name().toLowerCase() + ".");
         }
 
+        CommandHelper.checkClearSelection(player);
         return true;
     }
 }
