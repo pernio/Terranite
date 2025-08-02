@@ -1,6 +1,9 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.Terranite;
+import jinzo.terranite.commands.schematic.deleteTerra;
+import jinzo.terranite.commands.schematic.saveTerra;
+import jinzo.terranite.commands.schematic.listTerra;
 import jinzo.terranite.utils.CommandHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -14,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import jinzo.terranite.utils.ConfigManager;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,13 +26,14 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
     private final Terranite plugin = Terranite.getInstance();
     private final pasteTerra pasteTerra;
-    private final saveTerra saveTerra;
-    private final deleteTerra deleteTerra;
+    private final jinzo.terranite.commands.schematic.saveTerra saveTerra;
+    private final jinzo.terranite.commands.schematic.deleteTerra deleteTerra;
+    private final jinzo.terranite.commands.schematic.listTerra listTerra;
     private final ConfigManager config;
 
     public static final List<String> SUBCOMMANDS = List.of(
             "wand", "pos", "copy", "cut", "paste",
-            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "save", "generate", "config", "delete", "extend", "shrink", "break", "set"
+            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "schematic", "sc", "generate", "config", "extend", "shrink", "break", "set"
     );
     private static final List<String> ADMINSUBCOMMANDS = List.of("config");
 
@@ -41,25 +44,31 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             "deleteWandOnShot", "allowMultipleWands", "blockedBlocks", "notifiedBlocks", "blockedMaterials", "notifiedMaterials"
     );
 
-    public terraCommand(pasteTerra pasteTerra, saveTerra saveTerra, deleteTerra deleteTerra) {
+    public terraCommand(pasteTerra pasteTerra, saveTerra saveTerra, deleteTerra deleteTerra, listTerra listTerra) {
         this.pasteTerra = pasteTerra;
         this.saveTerra = saveTerra;
         this.deleteTerra = deleteTerra;
+        this.listTerra = listTerra;
         this.config = plugin.getConfiguration();
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player player)) {
-            CommandHelper.sendError(sender, "Only players can use Terranite commands.");
-            return false;
-        }
-
-        String subcommand = args.length > 0 ? args[0].toLowerCase() : "";
-        String subsub = args.length > 1 ? args[1].toLowerCase() : "";
 
         // Allow config reload commands even during lockdown
+        String subcommand = args.length > 0 ? args[0].toLowerCase() : "";
+        String subsub = args.length > 1 ? args[1].toLowerCase() : "";
         boolean isConfigReload = subcommand.equals("config") && subsub.equals("reload");
+
+        if (!(sender instanceof Player)) {
+            if (!isConfigReload) {
+                CommandHelper.sendError(sender, "Only players can use Terranite commands.");
+                return false;
+            }
+        }
+
+        Player player = sender instanceof Player ? (Player) sender : null;
+
 
         if (plugin.getConfiguration().lockdown && !isConfigReload) {
             CommandHelper.sendError(player, "Terranite is currently in lockdown mode. Commands are disabled.");
@@ -102,8 +111,6 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             case "undo" -> result = undoTerra.onCommand(sender, command, label, args);
             case "redo" -> result = redoTerra.onCommand(sender, command, label, args);
             case "clear" -> result = clearTerra.onCommand(sender, command, label, args);
-            case "save" -> result = saveTerra.onCommand(sender, command, label, args);
-            case "delete" -> result = deleteTerra.onCommand(sender, command, label, args);
             case "generate" -> result = generateTerra.onCommand(sender, command, label, args);
             case "extend" -> result = extendTerra.onCommand(sender, command, label, args);
             case "shrink" -> result = shrinkTerra.onCommand(sender, command, label, args);
@@ -148,6 +155,27 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                     CommandHelper.sendError(sender, "Usage: //config <reload|info>");
                     return false;
                 }
+            }
+            case "sc", "schematic" -> {
+                if (args.length < 2) {
+                    CommandHelper.sendError(sender, "Usage: //schematic <save|delete|list> <name>");
+                    return false;
+                }
+
+                String subSubcommand = args[1].toLowerCase();
+                String[] subArgs = new String[args.length - 1];
+                System.arraycopy(args, 1, subArgs, 0, subArgs.length);
+
+                switch (subSubcommand) {
+                    case "save" -> result = saveTerra.onCommand(sender, command, label, subArgs);
+                    case "delete" -> result = deleteTerra.onCommand(sender, command, label, subArgs);
+                    case "list" -> result = listTerra.onCommand(sender, command, label, subArgs);
+                    default -> {
+                        CommandHelper.sendError(sender, "Unknown schematic subcommand: " + subSubcommand);
+                        return false;
+                    }
+                }
+                break;
             }
 
             default -> {
@@ -242,7 +270,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                 case "select" -> {
                     return List.of("2", "5", "10", "15", "20");
                 }
-                case "paste", "delete" -> {
+                case "paste" -> {
                     String typed = args[1].toLowerCase();
                     List<String> allSchematics = plugin.getSchematicIO().getSavedSchematicNames();
                     return allSchematics.stream()
@@ -258,6 +286,21 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                             .filter(dir -> dir.startsWith(args[1].toLowerCase()))
                             .toList();
                 }
+            }
+        }
+
+        if ((args[0].equalsIgnoreCase("schematic") || args[0].equalsIgnoreCase("sc"))) {
+            if (args.length == 2) {
+                return Stream.of("save", "delete", "list")
+                        .filter(sub -> sub.startsWith(args[1].toLowerCase()))
+                        .collect(Collectors.toList());
+            }
+
+            if (args.length == 3 && args[1].equalsIgnoreCase("delete")) {
+                return plugin.getSchematicIO().getSavedSchematicNames().stream()
+                        .filter(name -> name.toLowerCase().startsWith(args[2].toLowerCase()))
+                        .limit(20)
+                        .collect(Collectors.toList());
             }
         }
 

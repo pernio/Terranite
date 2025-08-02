@@ -92,6 +92,16 @@ commands:
     description: Wand command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+  "/schematic":
+    description: Schematic management command
+    aliases: [sc]
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+  "/sc":
+    description: Schematic management command
+    aliases: [schematic]
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
 permissions:
   terranite.use:
     description: Allows use of the Terranite base command and its aliases

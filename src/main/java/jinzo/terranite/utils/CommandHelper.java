@@ -52,14 +52,13 @@ public class CommandHelper {
     }
 
     public static boolean isTerraWand(ItemStack item) {
-        if (item == null) return false;
+        if (item == null || !item.hasItemMeta()) return false;
 
         ItemMeta meta = item.getItemMeta();
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(Terranite.getInstance(), "is_wand");
+        if (meta == null) return false; // redundant now, but safe
 
-        return container.has(key, PersistentDataType.BYTE) &&
-                container.get(key, PersistentDataType.BYTE) == (byte) 1;
+        NamespacedKey key = new NamespacedKey(Terranite.getInstance(), "terra_wand");
+        return meta.getPersistentDataContainer().has(key, PersistentDataType.BYTE);
     }
 
     /**

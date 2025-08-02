@@ -1,4 +1,4 @@
-package jinzo.terranite.commands;
+package jinzo.terranite.commands.schematic;
 
 import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;

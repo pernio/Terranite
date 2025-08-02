@@ -51,7 +51,7 @@ public class wandTerra {
                 }
 
                 // Set PersistentDataContainer tag
-                NamespacedKey key = new NamespacedKey(Terranite.getInstance(), "is_wand");
+                NamespacedKey key = new NamespacedKey(Terranite.getInstance(), "terra_wand");
                 meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
 
                 wand.setItemMeta(meta);

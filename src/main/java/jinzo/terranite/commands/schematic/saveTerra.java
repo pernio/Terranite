@@ -1,4 +1,4 @@
-package jinzo.terranite.commands;
+package jinzo.terranite.commands.schematic;
 
 import jinzo.terranite.utils.ClipboardManager;
 import jinzo.terranite.utils.CommandHelper;
@@ -9,9 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class saveTerra {
