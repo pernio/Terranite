@@ -77,7 +77,20 @@ hide_selection_when_holding_other_item: true
 # |                       Wand settings                         |
 # +-------------------------------------------------------------+
 
-#
+# Material of the wand - Default: ARROW.
+# Supported materials: ARROW, FEATHER
+wand_material: FEATHER
+
+# Name of the wand
+wand_name: "Terra Wand"
+
+# Description of the wand
+# null for no description.
+wand_description: "This is a tool used for Terranite."
+
+# Color of the wand - Default: GOLD.
+# Full list: https://jd.advntr.dev/api/latest/net/kyori/adventure/text/format/NamedTextColor.html
+wand_color: GOLD
 
 # If a player should be able to summon multiple wands.
 allow_multiple_wands: false
@@ -107,6 +120,5 @@ outline_effect_speed: 4
 play_sound: false
 
 # Sound of selection - Default: BLOCK_NOTE_BLOCK_PLING.
+# Full list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
 select_sound: BLOCK_NOTE_BLOCK_PLING
-
-# Complete sound list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html

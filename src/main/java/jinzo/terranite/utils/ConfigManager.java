@@ -1,12 +1,10 @@
 package jinzo.terranite.utils;
 
 import jinzo.terranite.Terranite;
-import org.bukkit.Color;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.Particle.DustOptions;
-import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.*;
 
@@ -32,6 +30,14 @@ public class ConfigManager {
     public String selectSoundName = "BLOCK_NOTE_BLOCK_PLING";
     public Sound selectSound = Sound.BLOCK_NOTE_BLOCK_PLING;
 
+    public String wandMaterialName = "FEATHER";
+    public Material wandMaterial = Material.FEATHER;
+
+    public String wandColorName = "gold";
+    public NamedTextColor wandColor = NamedTextColor.GOLD;
+
+    public String wandName = "Terra Wand";
+    public String wandDescription = "This is a tool used for Terranite.";
     public boolean playSound = false;
     public boolean logNotifications = false;
     public boolean hideSelectionWhenHoldingOtherItem = true;
@@ -66,6 +72,8 @@ public class ConfigManager {
         outlineEffectDust = createDustOptions(outlineEffectColor);
         outlineEffectSpeed = Math.max(1, Math.min(cfg.getInt("outline_effect_speed", 4), 4));
 
+        wandName = cfg.getString("wand_name", "Terra Wand");
+        wandDescription = cfg.getString("wand_description", "This is a tool used for Terranite.");
         selectSoundName = cfg.getString("select_sound", "BLOCK_NOTE_BLOCK_PLING").toUpperCase();
         playSound = cfg.getBoolean("play_sound", false);
         logNotifications = cfg.getBoolean("log_notifications", false);
@@ -79,6 +87,17 @@ public class ConfigManager {
         deleteWandOnPickup = cfg.getBoolean("delete_wand_on_pickup", true);
         deleteWandOnShot = cfg.getBoolean("delete_wand_on_shot", true);
         allowMultipleWands = cfg.getBoolean("allow_multiple_wands", false);
+
+        wandMaterialName = cfg.getString("wand_material", "FEATHER").toUpperCase();
+        wandMaterial = Material.valueOf(wandMaterialName.equals("ARROW") ? "ARROW" : "FEATHER");
+
+        wandColorName = cfg.getString("wand_color", "gold").toLowerCase();
+        try {
+            wandColor = NamedTextColor.NAMES.value(wandColorName);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            plugin.getLogger().warning("Invalid wand_color: " + wandColorName + ", defaulting to GOLD");
+            wandColor = NamedTextColor.GOLD;
+        }
 
         try {
             selectSound = Sound.valueOf(selectSoundName);

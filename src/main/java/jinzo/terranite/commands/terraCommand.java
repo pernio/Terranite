@@ -55,7 +55,13 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        if (plugin.getConfiguration().lockdown) {
+        String subcommand = args.length > 0 ? args[0].toLowerCase() : "";
+        String subsub = args.length > 1 ? args[1].toLowerCase() : "";
+
+        // Allow config reload commands even during lockdown
+        boolean isConfigReload = subcommand.equals("config") && subsub.equals("reload");
+
+        if (plugin.getConfiguration().lockdown && !isConfigReload) {
             CommandHelper.sendError(player, "Terranite is currently in lockdown mode. Commands are disabled.");
             return false;
         }
@@ -78,7 +84,6 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        String subcommand = args[0].toLowerCase();
         boolean result;
 
         switch (subcommand) {

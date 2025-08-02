@@ -10,6 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.NamespacedKey;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,9 +22,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public class CommandHelper {
+    static ConfigManager config = Terranite.getInstance().getConfiguration();
     public static void sendSuccess(CommandSender sender, String message) {
         if (sender != null && message != null) {
             Component prefix = Component.text("[Terra] ", NamedTextColor.GOLD);
@@ -47,14 +52,14 @@ public class CommandHelper {
     }
 
     public static boolean isTerraWand(ItemStack item) {
-        if (item == null || item.getType() != Material.ARROW) return false;
-        if (!item.hasItemMeta()) return false;
+        if (item == null) return false;
 
         ItemMeta meta = item.getItemMeta();
-        if (meta.displayName() == null) return false;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        NamespacedKey key = new NamespacedKey(Terranite.getInstance(), "is_wand");
 
-        Component expectedName = Component.text("Terra wand", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false);
-        return meta.displayName().equals(expectedName);
+        return container.has(key, PersistentDataType.BYTE) &&
+                container.get(key, PersistentDataType.BYTE) == (byte) 1;
     }
 
     /**
