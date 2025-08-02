@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import jinzo.terranite.utils.ConfigManager;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,19 +56,15 @@ public class terraCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
+        if (!(sender instanceof Player player)) {
+                CommandHelper.sendError(sender, "Only players can use Terranite commands.");
+                return false;
+        }
+
         // Allow config reload commands even during lockdown
         String subcommand = args.length > 0 ? args[0].toLowerCase() : "";
         String subsub = args.length > 1 ? args[1].toLowerCase() : "";
         boolean isConfigReload = subcommand.equals("config") && subsub.equals("reload");
-
-        if (!(sender instanceof Player)) {
-            if (!isConfigReload) {
-                CommandHelper.sendError(sender, "Only players can use Terranite commands.");
-                return false;
-            }
-        }
-
-        Player player = sender instanceof Player ? (Player) sender : null;
 
 
         if (plugin.getConfiguration().lockdown && !isConfigReload) {
@@ -75,7 +72,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        if (player != null && !player.hasPermission("terranite.use")) {
+        if (!player.hasPermission("terranite.use")) {
             CommandHelper.sendError(player, "You do not have permission to use Terranite.");
             return false;
         }
@@ -246,9 +243,14 @@ public class terraCommand implements CommandExecutor, TabCompleter {
         if (subcommand.equals("count") || subcommand.equals("break")) {
             return Stream.of(Material.values())
                     .filter(Material::isBlock)
-                    .map(Material::name)
-                    .map(String::toLowerCase)
+                    .flatMap(material -> Stream.of(
+                            material.name().toLowerCase(),                    // e.g., "stone"
+                            "minecraft:" + material.name().toLowerCase()     // e.g., "minecraft:stone"
+                    ))
                     .filter(name -> name.startsWith(args[args.length - 1].toLowerCase()))
+                    .distinct()
+                    .sorted(Comparator.comparing((String name) -> name.startsWith("minecraft:") ? 1 : 0)
+                            .thenComparing(String::compareTo))
                     .limit(20)
                     .collect(Collectors.toList());
         }
@@ -259,9 +261,14 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                     return Stream.of(Material.values())
                             .filter(Material::isBlock)
                             .filter(m -> exempt || inverted == blockedMaterials.contains(m))
-                            .map(Material::name)
-                            .map(String::toLowerCase)
+                            .flatMap(material -> Stream.of(
+                                    material.name().toLowerCase(),                    // e.g., "stone"
+                                    "minecraft:" + material.name().toLowerCase()     // e.g., "minecraft:stone"
+                            ))
                             .filter(name -> name.startsWith(args[1].toLowerCase()))
+                            .distinct()
+                            .sorted(Comparator.comparing((String name) -> name.startsWith("minecraft:") ? 1 : 0)
+                                    .thenComparing(String::compareTo))
                             .limit(20)
                             .collect(Collectors.toList());
                 }
@@ -309,9 +316,14 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             if (args.length == 2) {
                 return Stream.of(Material.values())
                         .filter(Material::isBlock)
-                        .map(Material::name)
-                        .map(String::toLowerCase)
+                        .flatMap(material -> Stream.of(
+                                material.name().toLowerCase(),                    // e.g., "stone"
+                                "minecraft:" + material.name().toLowerCase()     // e.g., "minecraft:stone"
+                        ))
                         .filter(name -> name.startsWith(args[1].toLowerCase()))
+                        .distinct()
+                        .sorted(Comparator.comparing((String name) -> name.startsWith("minecraft:") ? 1 : 0)
+                                .thenComparing(String::compareTo))
                         .limit(20)
                         .collect(Collectors.toList());
             }
@@ -319,9 +331,14 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                 return Stream.of(Material.values())
                         .filter(Material::isBlock)
                         .filter(m -> exempt || inverted == blockedMaterials.contains(m))
-                        .map(Material::name)
-                        .map(String::toLowerCase)
+                        .flatMap(material -> Stream.of(
+                                material.name().toLowerCase(),                    // e.g., "stone"
+                                "minecraft:" + material.name().toLowerCase()     // e.g., "minecraft:stone"
+                        ))
                         .filter(name -> name.startsWith(args[2].toLowerCase()))
+                        .distinct()
+                        .sorted(Comparator.comparing((String name) -> name.startsWith("minecraft:") ? 1 : 0)
+                                .thenComparing(String::compareTo))
                         .limit(20)
                         .collect(Collectors.toList());
             }
@@ -331,11 +348,16 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             return Stream.of(Material.values())
                     .filter(Material::isBlock)
                     .filter(m -> exempt || inverted == blockedMaterials.contains(m))
-                    .map(Material::name)
-                    .map(String::toLowerCase)
+                    .flatMap(material -> Stream.of(
+                            material.name().toLowerCase(),                    // e.g., "stone"
+                            "minecraft:" + material.name().toLowerCase()     // e.g., "minecraft:stone"
+                    ))
                     .filter(name -> name.startsWith(args[2].toLowerCase()))
+                    .distinct()
+                    .sorted(Comparator.comparing((String name) -> name.startsWith("minecraft:") ? 1 : 0)
+                            .thenComparing(String::compareTo))
                     .limit(20)
-                    .toList();
+                    .collect(Collectors.toList());
         }
 
         if (subcommand.equals("pos") && args.length >= 3 && args.length <= 5) {
