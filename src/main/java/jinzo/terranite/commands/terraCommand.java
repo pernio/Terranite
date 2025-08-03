@@ -1,7 +1,6 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.Terranite;
-import jinzo.terranite.cancelTerra;
 import jinzo.terranite.commands.schematic.deleteTerra;
 import jinzo.terranite.commands.schematic.saveTerra;
 import jinzo.terranite.commands.schematic.listTerra;

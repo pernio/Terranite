@@ -1,5 +1,6 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.utils.CommandHelper;
 import jinzo.terranite.utils.PreviewManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,12 +13,12 @@ public class applyTerra {
         }
 
         if (!PreviewManager.hasPreview(player)) {
-            player.sendMessage("You have no active preview.");
+            CommandHelper.sendError(player, "You have no active preview.");
             return false;
         }
 
         PreviewManager.apply(player);
-        player.sendMessage("Changes applied.");
+        CommandHelper.sendSuccess(player, "Changes applied.");
         return true;
     }
 }

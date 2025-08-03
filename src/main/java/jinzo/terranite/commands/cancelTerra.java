@@ -1,5 +1,6 @@
-package jinzo.terranite;
+package jinzo.terranite.commands;
 
+import jinzo.terranite.utils.CommandHelper;
 import jinzo.terranite.utils.PreviewManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,12 +13,12 @@ public class cancelTerra {
         }
 
         if (!PreviewManager.hasPreview(player)) {
-            player.sendMessage("You have no active preview.");
+            CommandHelper.sendError(player, "You have no active preview.");
             return false;
         }
 
         PreviewManager.cancel(player);
-        player.sendMessage("Preview cancelled.");
+        CommandHelper.sendSuccess(player, "Preview cancelled.");
         return true;
     }
 }

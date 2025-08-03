@@ -1,6 +1,8 @@
 package jinzo.terranite.utils;
 
 import jinzo.terranite.Terranite;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -16,6 +18,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.NamespacedKey;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -426,5 +429,22 @@ public class CommandHelper {
 
         PreviewManager.preview(player, previewMap);
         return previewMap.size();
+    }
+
+    public static void requestPreview(Player player, @Nullable Material material, int changed) {
+
+        Component message = Component.text("[Terra] ").color(NamedTextColor.GOLD)
+                .append(Component.text("Previewed " + changed + " blocks" + (material == null ? "" : " " + material.name().toLowerCase()) + ".\n").color(NamedTextColor.DARK_GREEN))
+                .append(Component.text("[ //apply ]")
+                        .color(NamedTextColor.GREEN)
+                        .clickEvent(ClickEvent.runCommand("//apply"))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click to apply the previewed blocks"))))
+                .append(Component.space())
+                .append(Component.text("[ //cancel ]")
+                        .color(NamedTextColor.RED)
+                        .clickEvent(ClickEvent.runCommand("//cancel"))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click to cancel the preview"))));
+
+        player.sendMessage(message);
     }
 }

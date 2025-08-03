@@ -44,18 +44,7 @@ public class setTerra {
         if (isPreview) {
             changed = CommandHelper.previewSelection(player, material, block -> true);
             if (changed > 0) {
-                Component message = Component.text("Previewed " + changed + " blocks as " + material.name().toLowerCase() + ".\n")
-                        .append(Component.text("[ //apply ]")
-                                .color(NamedTextColor.GREEN)
-                                .clickEvent(ClickEvent.runCommand("//apply"))
-                                .hoverEvent(HoverEvent.showText(Component.text("Click to apply the previewed blocks"))))
-                        .append(Component.space())
-                        .append(Component.text("[ //cancel ]")
-                                .color(NamedTextColor.RED)
-                                .clickEvent(ClickEvent.runCommand("//cancel"))
-                                .hoverEvent(HoverEvent.showText(Component.text("Click to cancel the preview"))));
-
-                player.sendMessage(message);
+                CommandHelper.requestPreview(player, material, changed);
             }
         } else {
             changed = CommandHelper.modifySelection(player, material, block -> true);
