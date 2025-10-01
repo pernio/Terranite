@@ -36,10 +36,6 @@ commands:
     description: Cut blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
-  "/delete":
-    description: Delete schematic command
-    permission: terranite.use
-    permission-message: You do not have permission to use this command.
   "/extend":
     description: Extend selection command
     permission: terranite.use
@@ -66,10 +62,6 @@ commands:
     permission-message: You do not have permission to use this command.
   "/replace":
     description: Replace blocks command
-    permission: terranite.use
-    permission-message: You do not have permission to use this command.
-  "/save":
-    description: Save schematic command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
   "/select":

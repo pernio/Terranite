@@ -132,11 +132,12 @@ public class CommandHelper {
                     if (filter.test(block)) {
                         // Log destroying block
                         snapshot.put(block.getLocation(), block.getType());
-                        CoreProtectHook.logDestroy(player, block.getLocation(), block.getType());
+                        Material oldMaterial = block.getType();
+                        if (!oldMaterial.equals(material)) CoreProtectHook.logDestroy(player, block.getLocation(), oldMaterial);
 
                         // Set the block type first
                         block.setType(material);
-                        CoreProtectHook.logCreate(player, block.getLocation(), material);
+                        if (!oldMaterial.equals(material)) CoreProtectHook.logCreate(player, block.getLocation(), material);
 
                         // If the block is directional, set its facing
                         if (block.getBlockData() instanceof Directional) {
@@ -264,8 +265,8 @@ public class CommandHelper {
                         }
 
                         // Coreprotect logs
-                        CoreProtectHook.logDestroy(player, block.getLocation(), before);
-                        CoreProtectHook.logCreate(player, block.getLocation(), block.getType());
+                        if (!before.equals(block.getType())) CoreProtectHook.logDestroy(player, block.getLocation(), before);
+                        if (!before.equals(block.getType())) CoreProtectHook.logCreate(player, block.getLocation(), block.getType());
                     }
                 }
             }

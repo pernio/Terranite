@@ -1,7 +1,9 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.utils.ActionHistoryManager;
 import jinzo.terranite.utils.CommandHelper;
 import jinzo.terranite.utils.CoreProtectHook;
+import jinzo.terranite.utils.SelectionManager;
 import org.bukkit.Material;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -9,6 +11,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class centerTerra {
     public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
@@ -28,7 +33,7 @@ public class centerTerra {
 
         if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
-        var selection = jinzo.terranite.utils.SelectionManager.getSelection(player);
+        var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
             return false;
@@ -43,12 +48,19 @@ public class centerTerra {
 
         // Log destroying block
         Block block = player.getWorld().getBlockAt(centerX, centerY, centerZ);
-        CoreProtectHook.logDestroy(player, block.getLocation(), block.getType());
+        Material oldMaterial = block.getType();
+        if (!oldMaterial.equals(material)) {
+            // Undo/Redo actions
+            Map<Location, Material> snapshot = new HashMap<>();
+            snapshot.put(block.getLocation(), oldMaterial);
+            ActionHistoryManager.record(player, snapshot);
 
-        // Log after modification
+            // Coreprotect
+            CoreProtectHook.logDestroy(player, block.getLocation(), oldMaterial);
+            CoreProtectHook.logCreate(player, block.getLocation(), material);
+        }
+
         block.setType(material);
-        CoreProtectHook.logCreate(player, block.getLocation(), material);
-
         CommandHelper.checkClearSelection(player);
         CommandHelper.sendSuccess(player, "Placed " + material.name().toLowerCase() + " at the center of the selection.");
         return true;

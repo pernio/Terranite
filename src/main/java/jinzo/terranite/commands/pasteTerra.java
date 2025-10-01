@@ -103,8 +103,8 @@ public class pasteTerra {
                 }
 
                 // Log both modifications
-                CoreProtectHook.logDestroy(player, blockLoc, before);
-                CoreProtectHook.logCreate(player, blockLoc, blockData.getMaterial());
+                if (!before.equals(blockData.getMaterial())) CoreProtectHook.logDestroy(player, blockLoc, before);
+                if (!before.equals(blockData.getMaterial())) CoreProtectHook.logCreate(player, blockLoc, blockData.getMaterial());
             }
         }
 
