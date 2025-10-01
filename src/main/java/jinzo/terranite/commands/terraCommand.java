@@ -1,10 +1,13 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.Terranite;
+import jinzo.terranite.commands.config.reloadTerra;
 import jinzo.terranite.commands.schematic.deleteTerra;
 import jinzo.terranite.commands.schematic.saveTerra;
 import jinzo.terranite.commands.schematic.listTerra;
 import jinzo.terranite.utils.CommandHelper;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,7 +37,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
     public static final List<String> SUBCOMMANDS = List.of(
             "wand", "pos", "copy", "cut", "paste",
-            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "schematic", "sc", "generate", "config", "extend", "shrink", "break", "set", "move", "apply", "cancel"
+            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "schematic", "sc", "generate", "config", "extend", "shrink", "break", "set", "move", "apply", "cancel", "mask"
     );
     private static final List<String> ADMINSUBCOMMANDS = List.of("config");
 
@@ -112,6 +115,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             case "extend" -> result = extendTerra.onCommand(sender, command, label, args);
             case "shrink" -> result = shrinkTerra.onCommand(sender, command, label, args);
             case "move" -> result = moveTerra.onCommand(sender, command, label, args);
+            case "mask" -> result = maskTerra.onCommand(sender, command, label, args);
             case "apply" -> result = applyTerra.onCommand(sender);
             case "cancel" -> result = cancelTerra.onCommand(sender);
             case "config" -> {
@@ -119,14 +123,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                     String configSub = args[1].toLowerCase();
                     switch (configSub) {
                         case "reload" -> {
-                            if (!player.hasPermission("terranite.admin")) {
-                                CommandHelper.sendError(player, "You do not have permission to reload Terranite.");
-                                return false;
-                            }
-                            plugin.reloadConfig();
-                            plugin.getConfiguration().reload();
-                            CommandHelper.sendSuccess(player, "Terranite configuration reloaded.");
-                            return true;
+                            return reloadTerra.onCommand(sender, command, label, args);
                         }
                         case "info" -> {
                             if (!player.hasPermission("terranite.admin")) {
@@ -314,7 +311,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        if (subcommand.equals("replace")) {
+        if (subcommand.equals("replace") || subcommand.equals("mask")) {
             if (args.length == 2) {
                 return Stream.of(Material.values())
                         .filter(Material::isBlock)
@@ -329,7 +326,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                         .limit(20)
                         .collect(Collectors.toList());
             }
-            if (args.length == 3) {
+            if (args.length == 3 && !subcommand.equals("mask")) {
                 return Stream.of(Material.values())
                         .filter(Material::isBlock)
                         .filter(m -> exempt || inverted == blockedMaterials.contains(m))
@@ -393,65 +390,60 @@ public class terraCommand implements CommandExecutor, TabCompleter {
     }
 
     // Helper to format a key-value pair with colors
-    private String formatConfigEntry(String key, Object value) {
-        String keyColored = ChatColor.WHITE + key + ":" + ChatColor.RESET + " ";
-        String valueColored;
+    private Component formatConfigEntryComponent(String key, Object value) {
+        Component keyComp = Component.text(key + ": ").color(NamedTextColor.WHITE);
+        Component valueComp;
 
         if (value instanceof Boolean b) {
-            valueColored = b ? ChatColor.DARK_GREEN + "true" : ChatColor.RED + "false";
-        } else if (value instanceof Number || value instanceof Enum<?>) {
-            valueColored = ChatColor.GRAY + value.toString();
-        } else if (value instanceof String s) {
-            valueColored = ChatColor.GRAY + s;
+            valueComp = Component.text(String.valueOf(b), b ? NamedTextColor.DARK_GREEN : NamedTextColor.RED);
         } else {
-            // For lists, sets or other objects fallback to plain string
-            valueColored = ChatColor.GRAY + String.valueOf(value);
+            valueComp = Component.text(String.valueOf(value), NamedTextColor.GRAY);
         }
 
-        return keyColored + valueColored;
+        return keyComp.append(valueComp);
     }
 
     private void sendAllConfigInfo(Player player) {
-        CommandHelper.sendInfo(player, ChatColor.GOLD + "Config Info:");
-        CommandHelper.sendInfo(player, formatConfigEntry("maxSelectionSize", config.maxSelectionSize));
-        CommandHelper.sendInfo(player, formatConfigEntry("selectEffectColor", config.selectEffectColor));
-        CommandHelper.sendInfo(player, formatConfigEntry("outlineEffectColor", config.outlineEffectColor));
-        CommandHelper.sendInfo(player, formatConfigEntry("outlineEffectSpeed", config.outlineEffectSpeed));
-        CommandHelper.sendInfo(player, formatConfigEntry("selectSoundName", config.selectSoundName));
-        CommandHelper.sendInfo(player, formatConfigEntry("playSound", config.playSound));
-        CommandHelper.sendInfo(player, formatConfigEntry("logNotifications", config.logNotifications));
-        CommandHelper.sendInfo(player, formatConfigEntry("hideSelectionWhenHoldingOtherItem", config.hideSelectionWhenHoldingOtherItem));
-        CommandHelper.sendInfo(player, formatConfigEntry("clearSelectionAfterCommand", config.clearSelectionAfterCommand));
-        CommandHelper.sendInfo(player, formatConfigEntry("commandCooldown (ms)", config.commandCooldown));
-        CommandHelper.sendInfo(player, formatConfigEntry("safeDeleteSchematic", config.safeDeleteSchematic));
-        CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnDrop", config.deleteWandOnDrop));
-        CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnStore", config.deleteWandOnStore));
-        CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnPickup", config.deleteWandOnPickup));
-        CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnShot", config.deleteWandOnShot));
-        CommandHelper.sendInfo(player, formatConfigEntry("allowMultipleWands", config.allowMultipleWands));
-        CommandHelper.sendInfo(player, ChatColor.GRAY + "For listed block details: \"//config info blockedBlocks\"");
+        CommandHelper.sendInfo(player, Component.text("Config Info:").color(NamedTextColor.GOLD));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("maxSelectionSize", config.maxSelectionSize));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("selectEffectColor", config.selectEffectColor));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("outlineEffectColor", config.outlineEffectColor));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("outlineEffectSpeed", config.outlineEffectSpeed));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("selectSoundName", config.selectSoundName));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("playSound", config.playSound));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("logNotifications", config.logNotifications));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("hideSelectionWhenHoldingOtherItem", config.hideSelectionWhenHoldingOtherItem));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("clearSelectionAfterCommand", config.clearSelectionAfterCommand));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("commandCooldown (ms)", config.commandCooldown));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("safeDeleteSchematic", config.safeDeleteSchematic));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("deleteWandOnDrop", config.deleteWandOnDrop));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("deleteWandOnStore", config.deleteWandOnStore));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("deleteWandOnPickup", config.deleteWandOnPickup));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("deleteWandOnShot", config.deleteWandOnShot));
+        CommandHelper.sendInfo(player, formatConfigEntryComponent("allowMultipleWands", config.allowMultipleWands));
+        CommandHelper.sendInfo(player, Component.text("For listed block details: \"//config info blockedBlocks\"").color(NamedTextColor.GRAY));
     }
 
     private void sendSpecificConfigInfo(Player player, String keyRaw) {
-        CommandHelper.sendInfo(player, ChatColor.GOLD + "Config Info:");
+        CommandHelper.sendInfo(player, Component.text("Config Info:").color(NamedTextColor.GOLD));
         String key = keyRaw.toLowerCase();
         switch (key) {
-            case "maxselectionsize" -> CommandHelper.sendInfo(player, formatConfigEntry("maxSelectionSize", config.maxSelectionSize));
-            case "selecteffectcolor" -> CommandHelper.sendInfo(player, formatConfigEntry("selectEffectColor", config.selectEffectColor));
-            case "outlineeffectcolor" -> CommandHelper.sendInfo(player, formatConfigEntry("outlineEffectColor", config.outlineEffectColor));
-            case "outlineeffectspeed" -> CommandHelper.sendInfo(player, formatConfigEntry("outlineEffectSpeed", config.outlineEffectSpeed));
-            case "selectsoundname" -> CommandHelper.sendInfo(player, formatConfigEntry("selectSoundName", config.selectSoundName));
-            case "playsound" -> CommandHelper.sendInfo(player, formatConfigEntry("playSound", config.playSound));
-            case "lognotifications" -> CommandHelper.sendInfo(player, formatConfigEntry("logNotifications", config.logNotifications));
-            case "hideselectionwhenholdingotheritem" -> CommandHelper.sendInfo(player, formatConfigEntry("hideSelectionWhenHoldingOtherItem", config.hideSelectionWhenHoldingOtherItem));
-            case "clearselectionaftercommand" -> CommandHelper.sendInfo(player, formatConfigEntry("clearSelectionAfterCommand", config.clearSelectionAfterCommand));
-            case "commandcooldown" -> CommandHelper.sendInfo(player, formatConfigEntry("commandCooldown (ms)", config.commandCooldown));
-            case "safedeletesechematic" -> CommandHelper.sendInfo(player, formatConfigEntry("safeDeleteSchematic", config.safeDeleteSchematic));
-            case "deletewandondrop" -> CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnDrop", config.deleteWandOnDrop));
-            case "deletewandonstore" -> CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnStore", config.deleteWandOnStore));
-            case "deletewandonpickup" -> CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnPickup", config.deleteWandOnPickup));
-            case "deletewandonshot" -> CommandHelper.sendInfo(player, formatConfigEntry("deleteWandOnShot", config.deleteWandOnShot));
-            case "allowmultiplewands" -> CommandHelper.sendInfo(player, formatConfigEntry("allowMultipleWands", config.allowMultipleWands));
+            case "maxselectionsize" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("maxSelectionSize", config.maxSelectionSize));
+            case "selecteffectcolor" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("selectEffectColor", config.selectEffectColor));
+            case "outlineeffectcolor" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("outlineEffectColor", config.outlineEffectColor));
+            case "outlineeffectspeed" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("outlineEffectSpeed", config.outlineEffectSpeed));
+            case "selectsoundname" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("selectSoundName", config.selectSoundName));
+            case "playsound" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("playSound", config.playSound));
+            case "lognotifications" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("logNotifications", config.logNotifications));
+            case "hideselectionwhenholdingotheritem" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("hideSelectionWhenHoldingOtherItem", config.hideSelectionWhenHoldingOtherItem));
+            case "clearselectionaftercommand" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("clearSelectionAfterCommand", config.clearSelectionAfterCommand));
+            case "commandcooldown" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("commandCooldown (ms)", config.commandCooldown));
+            case "safedeletesechematic" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("safeDeleteSchematic", config.safeDeleteSchematic));
+            case "deletewandondrop" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("deleteWandOnDrop", config.deleteWandOnDrop));
+            case "deletewandonstore" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("deleteWandOnStore", config.deleteWandOnStore));
+            case "deletewandonpickup" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("deleteWandOnPickup", config.deleteWandOnPickup));
+            case "deletewandonshot" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("deleteWandOnShot", config.deleteWandOnShot));
+            case "allowmultiplewands" -> CommandHelper.sendInfo(player, formatConfigEntryComponent("allowMultipleWands", config.allowMultipleWands));
             case "blockedblocks" -> sendCompactList(player, "blockedBlocks", config.blockedBlocks);
             case "notifiedblocks" -> sendCompactList(player, "notifiedBlocks", config.notifiedBlocks);
             case "blockedmaterials" -> sendCompactSet(player, "blockedMaterials", config.blockedMaterials);
@@ -461,14 +453,16 @@ public class terraCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendCompactList(Player player, String name, List<?> list) {
-        String value = list.isEmpty() ? ChatColor.WHITE + "(empty)" :
-                ChatColor.GRAY + "\n- " + String.join("\n- ", list.stream().map(Object::toString).toList());
-        CommandHelper.sendInfo(player, ChatColor.WHITE + name + ":" + ChatColor.RESET + " " + value);
+        Component nameComp = Component.text(name + ": ").color(NamedTextColor.WHITE);
+        Component valueComp = list.isEmpty() ? Component.text("(empty)").color(NamedTextColor.WHITE)
+                : Component.text("\n- " + String.join("\n- ", list.stream().map(Object::toString).toList()), NamedTextColor.GRAY);
+        CommandHelper.sendInfo(player, nameComp.append(valueComp));
     }
 
     private void sendCompactSet(Player player, String name, Set<?> set) {
-        String value = set.isEmpty() ? ChatColor.WHITE + "(empty)" :
-                ChatColor.GRAY + "\n- " + String.join("\n- ", set.stream().map(Object::toString).toList());
-        CommandHelper.sendInfo(player, ChatColor.WHITE + name + ":" + ChatColor.RESET + " " + value);
+        Component nameComp = Component.text(name + ": ").color(NamedTextColor.WHITE);
+        Component valueComp = set.isEmpty() ? Component.text("(empty)").color(NamedTextColor.WHITE)
+                : Component.text("\n- " + String.join("\n- ", set.stream().map(Object::toString).toList()), NamedTextColor.GRAY);
+        CommandHelper.sendInfo(player, nameComp.append(valueComp));
     }
 }

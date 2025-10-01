@@ -44,6 +44,7 @@ public class ConfigManager {
     public boolean clearSelectionAfterCommand = true;
     public long commandCooldown = 0;
     public boolean safeDeleteSchematic = true;
+    public String coreprotectUser = "#terranite";
 
     public boolean deleteWandOnDrop = true;
     public boolean deleteWandOnStore = true;
@@ -81,6 +82,7 @@ public class ConfigManager {
         clearSelectionAfterCommand = cfg.getBoolean("clear_selection_after_command", true);
         commandCooldown = cfg.getLong("command_cooldown", 0) * 1000L;
         safeDeleteSchematic = cfg.getBoolean("safe_delete_schematic", true);
+        coreprotectUser = cfg.getString("coreprotect_user", "#terranite");
 
         deleteWandOnDrop = cfg.getBoolean("delete_wand_on_drop", true);
         deleteWandOnStore = cfg.getBoolean("delete_wand_on_store", true);

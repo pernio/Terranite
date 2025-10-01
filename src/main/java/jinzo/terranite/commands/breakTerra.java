@@ -1,6 +1,7 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.utils.CommandHelper;
+import jinzo.terranite.utils.CoreProtectHook;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -31,6 +32,7 @@ public class breakTerra {
 
         int result = CommandHelper.modifySelection(player, block -> {
             if (targetMaterials.contains(block.getType())) {
+                CoreProtectHook.logDestroy(player, block.getLocation(), Material.AIR);
                 block.setType(Material.AIR);
                 return true;
             }

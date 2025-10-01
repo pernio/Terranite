@@ -101,6 +101,10 @@ public class pasteTerra {
                     notifiedCount.merge(mat, 1, Integer::sum);
                     firstLocation.putIfAbsent(mat, blockLoc);
                 }
+
+                // Log both modifications
+                CoreProtectHook.logDestroy(player, blockLoc, before);
+                CoreProtectHook.logCreate(player, blockLoc, blockData.getMaterial());
             }
         }
 

@@ -1,6 +1,7 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.utils.CommandHelper;
+import jinzo.terranite.utils.CoreProtectHook;
 import jinzo.terranite.utils.SelectionManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -58,9 +59,7 @@ public class generateTerra {
                 for (int x = minX; x <= maxX; x++) {
                     for (int y = minY; y <= maxY; y++) {
                         for (int z = minZ; z <= maxZ; z++) {
-                            Block block = world.getBlockAt(x, y, z);
-                            block.setType(material);
-                            changed++;
+                            changed += handleBlockChange(world.getBlockAt(x, y, z), player, material);
                         }
                     }
                 }
@@ -70,11 +69,7 @@ public class generateTerra {
                     for (int y = minY; y <= maxY; y++) {
                         for (int z = minZ; z <= maxZ; z++) {
                             boolean isEdge = x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ;
-                            if (isEdge) {
-                                Block block = world.getBlockAt(x, y, z);
-                                block.setType(material);
-                                changed++;
-                            }
+                            if (isEdge) changed += handleBlockChange(world.getBlockAt(x, y, z), player, material);
                         }
                     }
                 }
@@ -101,13 +96,9 @@ public class generateTerra {
                             double distanceSq = dx * dx + dy * dy + dz * dz;
 
                             boolean isInside = distanceSq <= rSq;
-                            boolean isShell = shape.equals("hollow_sphere") ? distanceSq >= innerRSq : true;
+                            boolean isShell = !shape.equals("hollow_sphere") || distanceSq >= innerRSq;
 
-                            if (isInside && isShell) {
-                                Block block = world.getBlockAt(x, y, z);
-                                block.setType(material);
-                                changed++;
-                            }
+                            if (isInside && isShell) changed += handleBlockChange(world.getBlockAt(x, y, z), player, material);
                         }
                     }
                 }
@@ -121,5 +112,17 @@ public class generateTerra {
         CommandHelper.checkClearSelection(player);
         CommandHelper.sendSuccess(player, "Generated " + shape + " with " + changed + (changed == 1 ? " block." : " blocks."));
         return true;
+    }
+
+    private static int handleBlockChange(Block block, Player player, Material material) {
+        if (block.getType().equals(material)) return 0;
+        // Log before modification
+        CoreProtectHook.logDestroy(player, block.getLocation(), block.getType());
+
+        // Log after modification
+        block.setType(material);
+        CoreProtectHook.logCreate(player, block.getLocation(), material);
+
+        return 1;
     }
 }

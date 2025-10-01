@@ -14,21 +14,12 @@ public class ActionHistoryManager {
     private static final Map<UUID, ConcurrentLinkedDeque<Map<Location, Material>>> undoStack = new ConcurrentHashMap<>();
     private static final Map<UUID, ConcurrentLinkedDeque<Map<Location, Material>>> redoStack = new ConcurrentHashMap<>();
 
-    /**
-     * Records a snapshot of blocks changed by the player.
-     * Clears the redo stack.
-     */
     public static void record(Player player, Map<Location, Material> snapshot) {
         UUID uuid = player.getUniqueId();
         undoStack.computeIfAbsent(uuid, k -> new ConcurrentLinkedDeque<>()).push(snapshot);
         redoStack.remove(uuid);
     }
 
-    /**
-     * Undo the last action for the player.
-     * Must be called from main thread or scheduled sync task.
-     * @return true if undo successful, false if no undo available
-     */
     public static boolean undo(Player player) {
         UUID uuid = player.getUniqueId();
         var playerUndoStack = undoStack.get(uuid);
@@ -38,20 +29,21 @@ public class ActionHistoryManager {
         Map<Location, Material> redoSnapshot = new ConcurrentHashMap<>();
 
         for (Map.Entry<Location, Material> entry : snapshot.entrySet()) {
+            // Log destroying block
             Block block = player.getWorld().getBlockAt(entry.getKey());
-            redoSnapshot.put(entry.getKey(), block.getType());
+            Material oldType = block.getType();
+            CoreProtectHook.logDestroy(player, block.getLocation(), oldType);
+
+            // Log after modification
+            redoSnapshot.put(entry.getKey(), oldType);
             block.setType(entry.getValue());
+            CoreProtectHook.logCreate(player, block.getLocation(), block.getType());
         }
 
         redoStack.computeIfAbsent(uuid, k -> new ConcurrentLinkedDeque<>()).push(redoSnapshot);
         return true;
     }
 
-    /**
-     * Redo the last undone action for the player.
-     * Must be called from main thread or scheduled sync task.
-     * @return true if redo successful, false if no redo available
-     */
     public static boolean redo(Player player) {
         UUID uuid = player.getUniqueId();
         var playerRedoStack = redoStack.get(uuid);
@@ -61,9 +53,15 @@ public class ActionHistoryManager {
         Map<Location, Material> undoSnapshot = new ConcurrentHashMap<>();
 
         for (Map.Entry<Location, Material> entry : snapshot.entrySet()) {
+            // Log destroying block
             Block block = player.getWorld().getBlockAt(entry.getKey());
-            undoSnapshot.put(entry.getKey(), block.getType());
+            Material oldType = block.getType();
+            CoreProtectHook.logDestroy(player, block.getLocation(), oldType);
+
+            // Log after modification
+            undoSnapshot.put(entry.getKey(), oldType);
             block.setType(entry.getValue());
+            CoreProtectHook.logCreate(player, block.getLocation(), block.getType());
         }
 
         undoStack.computeIfAbsent(uuid, k -> new ConcurrentLinkedDeque<>()).push(undoSnapshot);

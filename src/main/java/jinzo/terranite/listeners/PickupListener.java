@@ -37,12 +37,16 @@ public class PickupListener implements Listener {
     private boolean detectFolia() {
         try {
             Class.forName("io.papermc.paper.threadedregions.scheduler.EntityScheduler");
-            plugin.getLogger().log(Level.INFO, "Folia environment detected.");
-            return true;
-        } catch (ClassNotFoundException e) {
-            plugin.getLogger().log(Level.INFO, "Running on standard Bukkit/Paper environment.");
-            return false;
+            String serverName = Bukkit.getServer().getName().toLowerCase();
+            if (serverName.contains("folia")) {
+                plugin.getLogger().log(Level.INFO, "Folia environment detected.");
+                return true;
+            }
+        } catch (ClassNotFoundException ignored) {
         }
+
+        plugin.getLogger().log(Level.INFO, "Running on standard Bukkit/Paper environment.");
+        return false;
     }
 
     private void handleWandLoss(Player player) {

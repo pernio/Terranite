@@ -1,6 +1,7 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.utils.CommandHelper;
+import jinzo.terranite.utils.CoreProtectHook;
 import org.bukkit.Material;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -40,8 +41,13 @@ public class centerTerra {
         int centerY = (loc1.getBlockY() + loc2.getBlockY()) / 2;
         int centerZ = (loc1.getBlockZ() + loc2.getBlockZ()) / 2;
 
-        Block centerBlock = player.getWorld().getBlockAt(centerX, centerY, centerZ);
-        centerBlock.setType(material);
+        // Log destroying block
+        Block block = player.getWorld().getBlockAt(centerX, centerY, centerZ);
+        CoreProtectHook.logDestroy(player, block.getLocation(), block.getType());
+
+        // Log after modification
+        block.setType(material);
+        CoreProtectHook.logCreate(player, block.getLocation(), material);
 
         CommandHelper.checkClearSelection(player);
         CommandHelper.sendSuccess(player, "Placed " + material.name().toLowerCase() + " at the center of the selection.");

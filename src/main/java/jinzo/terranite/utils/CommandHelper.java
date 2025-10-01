@@ -3,7 +3,6 @@ package jinzo.terranite.utils;
 import jinzo.terranite.Terranite;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -14,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.NamespacedKey;
@@ -28,7 +26,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public class CommandHelper {
@@ -41,6 +38,14 @@ public class CommandHelper {
         }
     }
 
+    // Overload
+    public static void sendSuccess(CommandSender sender, Component message) {
+        if (sender != null && message != null) {
+            Component prefix = Component.text("[Terra] ", NamedTextColor.GOLD);
+            sender.sendMessage(prefix.append(message));
+        }
+    }
+
     public static void sendError(CommandSender sender, String message) {
         if (sender != null && message != null) {
             Component prefix = Component.text("[Terra] ", NamedTextColor.GOLD);
@@ -49,11 +54,27 @@ public class CommandHelper {
         }
     }
 
+    // Overload
+    public static void sendError(CommandSender sender, Component message) {
+        if (sender != null && message != null) {
+            Component prefix = Component.text("[Terra] ", NamedTextColor.GOLD);
+            sender.sendMessage(prefix.append(message));
+        }
+    }
+
     public static void sendInfo(CommandSender sender, String message) {
         if (sender != null && message != null) {
             Component prefix = Component.text("[Terra] ", NamedTextColor.GOLD);
             Component body = Component.text(message, NamedTextColor.YELLOW);
             sender.sendMessage(prefix.append(body));
+        }
+    }
+
+    // Overload
+    public static void sendInfo(CommandSender sender, Component message) {
+        if (sender != null && message != null) {
+            Component prefix = Component.text("[Terra] ", NamedTextColor.GOLD);
+            sender.sendMessage(prefix.append(message));
         }
     }
 
@@ -77,7 +98,7 @@ public class CommandHelper {
     public static int modifySelection(Player player, Material material, Predicate<Block> filter) {
         var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) return -1;
-        boolean inverted = Terranite.getInstance().getConfiguration().excludeNotifiedBlocks;
+        boolean inverted = config.excludeNotifiedBlocks;
 
         Location loc1 = selection.pos1;
         Location loc2 = selection.pos2;
@@ -109,10 +130,13 @@ public class CommandHelper {
                 for (int z = minZ; z <= maxZ; z++) {
                     Block block = world.getBlockAt(x, y, z);
                     if (filter.test(block)) {
+                        // Log destroying block
                         snapshot.put(block.getLocation(), block.getType());
+                        CoreProtectHook.logDestroy(player, block.getLocation(), block.getType());
 
                         // Set the block type first
                         block.setType(material);
+                        CoreProtectHook.logCreate(player, block.getLocation(), material);
 
                         // If the block is directional, set its facing
                         if (block.getBlockData() instanceof Directional) {
@@ -132,7 +156,7 @@ public class CommandHelper {
                         changed++;
 
                         // Log notification if it's a notified block
-                        if (inverted != Terranite.getInstance().getConfiguration().notifiedMaterials.contains(material)) {
+                        if (inverted != config.notifiedMaterials.contains(material)) {
                             notifiedCount.merge(material, 1, Integer::sum);
                             firstLocation.putIfAbsent(material, block.getLocation());
                         }
@@ -187,19 +211,19 @@ public class CommandHelper {
     }
 
     private static BlockFace getOppositeFace(BlockFace face) {
-        switch (face) {
-            case NORTH: return BlockFace.SOUTH;
-            case SOUTH: return BlockFace.NORTH;
-            case EAST: return BlockFace.WEST;
-            case WEST: return BlockFace.EAST;
-            default: return face; // return same face if not cardinal direction
-        }
+        return switch (face) {
+            case NORTH -> BlockFace.SOUTH;
+            case SOUTH -> BlockFace.NORTH;
+            case EAST -> BlockFace.WEST;
+            case WEST -> BlockFace.EAST;
+            default -> face; // return same face if not cardinal direction
+        };
     }
 
     public static int modifySelection(Player player, BlockModifier modifier) {
         var selection = SelectionManager.getSelection(player);
         if (selection.pos1 == null || selection.pos2 == null) return -1;
-        boolean inverted = Terranite.getInstance().getConfiguration().excludeNotifiedBlocks;
+        boolean inverted = config.excludeNotifiedBlocks;
 
         Location loc1 = selection.pos1;
         Location loc2 = selection.pos2;
@@ -233,11 +257,15 @@ public class CommandHelper {
                         snapshot.put(block.getLocation(), before);
                         changed++;
 
-                        if (inverted != Terranite.getInstance().getConfiguration().notifiedMaterials.contains(block.getType())) {
+                        if (inverted != config.notifiedMaterials.contains(block.getType())) {
                             Material after = block.getType();
                             notifiedCount.merge(after, 1, Integer::sum);
                             firstLocation.putIfAbsent(after, block.getLocation());
                         }
+
+                        // Coreprotect logs
+                        CoreProtectHook.logDestroy(player, block.getLocation(), before);
+                        CoreProtectHook.logCreate(player, block.getLocation(), block.getType());
                     }
                 }
             }
@@ -308,7 +336,7 @@ public class CommandHelper {
     }
 
     public static boolean checkSelectionSize(Player player, long volume) {
-        int maxSelectionSize = Terranite.getInstance().getConfiguration().maxSelectionSize;
+        int maxSelectionSize = config.maxSelectionSize;
         if (maxSelectionSize != -1 && !player.hasPermission("terranite.exempt.selection") && volume > maxSelectionSize) {
             sendError(player, "Selection too large. Limit is " + maxSelectionSize + (maxSelectionSize == 1 ? " block." : " blocks."));
             return false;
@@ -318,11 +346,11 @@ public class CommandHelper {
 
     public static boolean checkMaterialBlocked(Player player, Material material) {
         if (material == null || !material.isBlock()) return false;
-        boolean inverted = Terranite.getInstance().getConfiguration().excludeBlockedBlocks;
+        boolean inverted = config.excludeBlockedBlocks;
         if (player.hasPermission("terranite.exempt.blockedBlocks"))
             return false;
 
-        if (inverted != Terranite.getInstance().getConfiguration().blockedMaterials.contains(material)) {
+        if (inverted != config.blockedMaterials.contains(material)) {
             sendError(player, "This block is forbidden to use.");
             return true;
         }
@@ -331,23 +359,23 @@ public class CommandHelper {
 
     public static void checkClearSelection(Player player) {
         // Clear selection after command if enabled in config
-        if (Terranite.getInstance().getConfiguration().clearSelectionAfterCommand) {
+        if (config.clearSelectionAfterCommand) {
             SelectionManager.clearSelection(player);
         }
     }
 
     public static void playSound(Player player, Location location) {
-        if (!Terranite.getInstance().getConfiguration().playSound) return;
+        if (!config.playSound) return;
 
         // Play effect if enabled in config
-        player.playSound(location, Terranite.getInstance().getConfiguration().selectSound, 1.0f, 1.6f);
+        player.playSound(location, config.selectSound, 1.0f, 1.6f);
     }
 
     public static void logMessage(Player player, String message) {
         // Always log to console
         Bukkit.getLogger().info(message);
 
-        if (!Terranite.getInstance().getConfiguration().logNotifications) return;
+        if (!config.logNotifications) return;
 
         try {
             // Create logs/users directory
