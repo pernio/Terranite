@@ -28,6 +28,8 @@ public class bindTerra {
 
         if (!player.hasPermission("terranite.bind")) return false;
 
+        if (CommandHelper.checkMultipleWands(player)) return false;
+
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item == null || item.getType().isAir()) {
             CommandHelper.sendError(player, "You must be holding an item to bind it!");
@@ -36,6 +38,7 @@ public class bindTerra {
 
         if (CommandHelper.isTerraWand(item)) {
             CommandHelper.sendError(player, "This item is already bound!");
+            return false;
         }
 
         try {

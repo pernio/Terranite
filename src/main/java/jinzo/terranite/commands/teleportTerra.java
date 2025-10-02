@@ -1,10 +1,10 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
-import jinzo.terranite.utils.MaskManager;
 import jinzo.terranite.utils.SelectionManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -39,13 +39,31 @@ public class teleportTerra {
         int centerZ = (loc1.getBlockZ() + loc2.getBlockZ()) / 2;
 
         Location target = new Location(loc1.getWorld(), centerX + 0.5, centerY, centerZ + 0.5);
-
         target.setYaw(player.getLocation().getYaw());
         target.setPitch(player.getLocation().getPitch());
 
-        player.teleport(target);
-
-        CommandHelper.sendSuccess(player, "Teleported to the center of the selection.");
-        return true;
+        try {
+            player.teleportAsync(target).thenAccept(success -> {
+                // Run messaging back on the main server thread to be safe
+                Bukkit.getScheduler().runTask(Terranite.getInstance(), () -> {
+                    if (success) {
+                        CommandHelper.sendSuccess(player, "Teleported to the center of the selection.");
+                    } else {
+                        CommandHelper.sendError(player, "Teleport failed.");
+                    }
+                });
+            });
+            return true;
+        } catch (UnsupportedOperationException ex) {
+            Bukkit.getScheduler().runTask(Terranite.getInstance(), () -> {
+                try {
+                    player.teleport(target); // will run on main thread
+                    CommandHelper.sendSuccess(player, "Teleported to the center of the selection.");
+                } catch (Exception e) {
+                    CommandHelper.sendError(player, "Teleport failed: " + e.getMessage());
+                }
+            });
+            return true;
+        }
     }
 }

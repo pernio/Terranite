@@ -28,14 +28,7 @@ public class wandTerra {
             return false;
         }
 
-        if (!Terranite.getInstance().getConfiguration().allowMultipleWands) {
-            for (ItemStack item : player.getInventory().getContents()) {
-                if (isTerraWand(item)) {
-                    CommandHelper.sendError(player, "You already have a Terra wand!");
-                    return false;
-                }
-            }
-        }
+        if (CommandHelper.checkMultipleWands(player)) return false;
 
         try {
             ItemStack wand = new ItemStack(config.wandMaterial);

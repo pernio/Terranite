@@ -88,6 +88,18 @@ public class CommandHelper {
         return meta.getPersistentDataContainer().has(key, PersistentDataType.BYTE);
     }
 
+    public static boolean checkMultipleWands(Player player) {
+        if (!config.allowMultipleWands) {
+            for (ItemStack item : player.getInventory().getContents()) {
+                if (isTerraWand(item)) {
+                    sendError(player, "You already have a Terra wand!");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Modifies blocks in player's selection matching filter to the given material.
      * Records the original block states for undo functionality.
@@ -166,6 +178,10 @@ public class CommandHelper {
             }
         }
 
+        if (!snapshot.isEmpty()) {
+            ActionHistoryManager.record(player, snapshot);
+        }
+
         // Bypass logging
         if (player.hasPermission("terranite.exempt.notifiedBlocks")) return changed;
 
@@ -185,10 +201,6 @@ public class CommandHelper {
             );
 
             logMessage(player, message);
-        }
-
-        if (!snapshot.isEmpty()) {
-            ActionHistoryManager.record(player, snapshot);
         }
 
         return changed;
@@ -272,6 +284,10 @@ public class CommandHelper {
             }
         }
 
+        if (!snapshot.isEmpty()) {
+            ActionHistoryManager.record(player, snapshot);
+        }
+
         // Bypass logging
         if (player.hasPermission("terranite.exempt.notifiedBlocks")) return changed;
 
@@ -290,10 +306,6 @@ public class CommandHelper {
                     loc.getWorld().getName()
             );
             logMessage(player, message);
-        }
-
-        if (!snapshot.isEmpty()) {
-            ActionHistoryManager.record(player, snapshot);
         }
 
         return changed;

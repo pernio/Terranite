@@ -1,7 +1,7 @@
 [
   { "id": 0, "name": "minecraft:air" },
   { "id": 1, "name": "minecraft:stone" },
-  { "id": 2, "name": "minecraft:grass" },
+  { "id": 2, "name": "minecraft:grass_block" },
   { "id": 3, "name": "minecraft:dirt" },
   { "id": 4, "name": "minecraft:cobblestone" },
   { "id": 5, "name": "minecraft:planks" },
