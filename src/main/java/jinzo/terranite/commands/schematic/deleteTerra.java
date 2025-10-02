@@ -29,7 +29,7 @@ public class deleteTerra implements CommandExecutor {
         }
 
         if (args.length != 2) {
-            CommandHelper.sendError(player, "Usage: //delete <name>");
+            CommandHelper.sendError(player, "Usage: //schematic delete <name>");
             return false;
         }
 

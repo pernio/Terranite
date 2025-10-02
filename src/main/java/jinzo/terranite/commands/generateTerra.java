@@ -29,7 +29,23 @@ public class generateTerra {
             return false;
         }
 
-        String shape = args[1].toLowerCase();
+        String shape = "box";
+
+        switch (args[1].toLowerCase()) {
+            case "b" -> {
+                shape = "box";
+            }
+            case "hb" -> {
+                shape = "hollow_box";
+            }
+            case "s" -> {
+                shape = "sphere";
+            }
+            case "hs" -> {
+                shape = "hollow_sphere";
+            }
+        }
+
         Material material = CommandHelper.findMaterial(player, args[2]);
         if (material == null) return false;
 

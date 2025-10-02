@@ -22,7 +22,29 @@ public class moveTerra {
             return false;
         }
 
-        String direction = args[1].toLowerCase();
+        String direction = "north";
+
+        switch (args[1].toLowerCase()) {
+            case "n" -> {
+                direction = "north";
+            }
+            case "s" -> {
+                direction = "south";
+            }
+            case "e" -> {
+                direction = "east";
+            }
+            case "w" -> {
+                direction = "west";
+            }
+            case "u" -> {
+                direction = "up";
+            }
+            case "d" -> {
+                direction = "down";
+            }
+        }
+
         int range;
 
         try {

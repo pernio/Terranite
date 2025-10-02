@@ -26,7 +26,7 @@ public class saveTerra {
         }
 
         if (args.length < 2) {
-            CommandHelper.sendError(player, "Usage: //save <name>");
+            CommandHelper.sendError(player, "Usage: //schematic save <name>");
             return false;
         }
 

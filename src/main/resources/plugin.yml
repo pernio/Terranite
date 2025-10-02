@@ -16,7 +16,7 @@ commands:
     permission-message: You do not have permission to use this command.
 
   "/break":
-    aliases: ["/b"]
+    aliases: ["/br"]
     description: Break blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
@@ -88,13 +88,13 @@ commands:
     permission-message: You do not have permission to use this command.
 
   "/replace":
-    aliases: ["/rp"]
+    aliases: ["/re"]
     description: Replace blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
 
   "/replacenear":
-    aliases: ["/rpn"]
+    aliases: ["/ren"]
     description: Replace blocks near player command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
@@ -163,6 +163,18 @@ commands:
     aliases: ["/tp"]
     description: Teleport to center of selection command
     permission: terranite.teleport
+    permission-message: You do not have permission to use this command.
+
+  "/bind":
+    aliases: ["/b"]
+    description: Binds a tool to Terranite
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+
+  "/unbind":
+    aliases: ["/ub"]
+    description: Unbinds a tool from Terranite
+    permission: terranite.use
     permission-message: You do not have permission to use this command.
 
 permissions:

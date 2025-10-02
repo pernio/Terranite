@@ -27,7 +27,7 @@ public class fillTerra {
 
         if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
-        int changed = CommandHelper.modifySelection(player, material, block -> block.getType() == mask);
+        int changed = CommandHelper.modifySelection(player, material, block -> block.getType() == mask, null, null);
 
         if (changed == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");

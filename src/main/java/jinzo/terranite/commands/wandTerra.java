@@ -41,7 +41,6 @@ public class wandTerra {
             ItemStack wand = new ItemStack(config.wandMaterial);
             ItemMeta meta = wand.getItemMeta();
             if (meta != null) {
-                // Set display name and lore (optional)
                 meta.displayName(
                         Component.text(config.wandName, config.wandColor)
                                 .decoration(TextDecoration.ITALIC, false)
@@ -50,7 +49,6 @@ public class wandTerra {
                     meta.lore(List.of(Component.text(config.wandDescription, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
                 }
 
-                // Set PersistentDataContainer tag
                 NamespacedKey key = new NamespacedKey(Terranite.getInstance(), "terra_wand");
                 meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
 
@@ -62,7 +60,7 @@ public class wandTerra {
 
             return true;
         } catch (Exception e) {
-            getLogger().severe("Error while creating wand: " + e.getMessage());
+            sender.sendMessage(Component.text("Failed to bind item: " + e.getMessage(), NamedTextColor.RED));
             e.printStackTrace();
             return false;
         }

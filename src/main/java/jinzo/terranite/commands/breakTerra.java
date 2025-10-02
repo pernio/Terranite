@@ -37,7 +37,7 @@ public class breakTerra {
                 return true;
             }
             return false;
-        });
+        }, null, null);
 
         if (result == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");

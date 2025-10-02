@@ -8,7 +8,6 @@ import jinzo.terranite.commands.schematic.listTerra;
 import jinzo.terranite.utils.CommandHelper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -36,14 +35,13 @@ public class terraCommand implements CommandExecutor, TabCompleter {
     private final ConfigManager config;
 
     public static final List<String> SUBCOMMANDS = List.of(
-            "wand", "pos", "copy", "cut", "paste",
-            "select", "fill", "replace", "count", "center",
-            "undo", "redo", "clear", "schematic", "sc",
-            "generate", "config", "extend", "shrink", "break",
-            "set", "move", "apply", "cancel", "mask", "teleport",
-            "tp", "replacenear"
+            "break", "center", "clear", "copy", "count",
+            "cut", "extend", "fill", "generate", "paste", "pos",
+            "redo", "replace", "replacenear", "select", "set",
+            "shrink", "undo", "wand", "schematic", "move", "mask",
+            "apply", "cancel", "teleport", "bind", "unbind"
     );
-    private static final List<String> ADMINSUBCOMMANDS = List.of("config");
+    private static final List<String> ADMINSUBCOMMANDS = List.of("config", "cfg");
 
     private static final List<String> CONFIG_KEYS = List.of(
             "maxSelectionSize", "selectEffectColor", "outlineEffectColor", "outlineEffectSpeed", "selectSoundName",
@@ -101,36 +99,39 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
         switch (subcommand) {
             case "wand" -> result = wandTerra.onCommand(sender, command, label, args);
-            case "set" -> result = setTerra.onCommand(sender, command, label, args);
-            case "break" -> result = breakTerra.onCommand(sender, command, label, args);
-            case "pos" -> result = posTerra.onCommand(sender, command, label, args);
-            case "copy" -> result = copyTerra.onCommand(sender, command, label, args);
-            case "cut" -> result = cutTerra.onCommand(sender, command, label, args);
-            case "paste" -> result = pasteTerra.onCommand(sender, command, label, args);
-            case "select" -> result = selectTerra.onCommand(sender, command, label, args);
-            case "fill" -> result = fillTerra.onCommand(sender, command, label, args);
-            case "replace" -> result = replaceTerra.onCommand(sender, command, label, args);
-            case "count" -> result = countTerra.onCommand(sender, command, label, args);
-            case "center" -> result = centerTerra.onCommand(sender, command, label, args);
-            case "undo" -> result = undoTerra.onCommand(sender, command, label, args);
-            case "redo" -> result = redoTerra.onCommand(sender, command, label, args);
-            case "clear" -> result = clearTerra.onCommand(sender, command, label, args);
-            case "generate" -> result = generateTerra.onCommand(sender, command, label, args);
-            case "extend" -> result = extendTerra.onCommand(sender, command, label, args);
-            case "shrink" -> result = shrinkTerra.onCommand(sender, command, label, args);
-            case "move" -> result = moveTerra.onCommand(sender, command, label, args);
-            case "mask" -> result = maskTerra.onCommand(sender, command, label, args);
+            case "set", "s" -> result = setTerra.onCommand(sender, command, label, args);
+            case "break", "br" -> result = breakTerra.onCommand(sender, command, label, args);
+            case "pos", "p" -> result = posTerra.onCommand(sender, command, label, args);
+            case "copy", "co" -> result = copyTerra.onCommand(sender, command, label, args);
+            case "cut", "cu" -> result = cutTerra.onCommand(sender, command, label, args);
+            case "paste", "pa" -> result = pasteTerra.onCommand(sender, command, label, args);
+            case "select", "se" -> result = selectTerra.onCommand(sender, command, label, args);
+            case "fill", "f" -> result = fillTerra.onCommand(sender, command, label, args);
+            case "replace", "re" -> result = replaceTerra.onCommand(sender, command, label, args);
+            case "replacenear", "ren" -> result = replacenearTerra.onCommand(sender, command, label, args);
+            case "count", "cnt" -> result = countTerra.onCommand(sender, command, label, args);
+            case "center", "ce" -> result = centerTerra.onCommand(sender, command, label, args);
+            case "undo", "u" -> result = undoTerra.onCommand(sender, command, label, args);
+            case "redo", "r" -> result = redoTerra.onCommand(sender, command, label, args);
+            case "clear", "c" -> result = clearTerra.onCommand(sender, command, label, args);
+            case "generate", "g" -> result = generateTerra.onCommand(sender, command, label, args);
+            case "extend", "e" -> result = extendTerra.onCommand(sender, command, label, args);
+            case "shrink", "sh" -> result = shrinkTerra.onCommand(sender, command, label, args);
+            case "move", "mo" -> result = moveTerra.onCommand(sender, command, label, args);
+            case "mask", "ma" -> result = maskTerra.onCommand(sender, command, label, args);
             case "teleport", "tp" -> result = teleportTerra.onCommand(sender, command, label, args);
-            case "apply" -> result = applyTerra.onCommand(sender);
-            case "cancel" -> result = cancelTerra.onCommand(sender);
-            case "config" -> {
+            case "bind", "b" -> result = bindTerra.onCommand(sender, command, label, args);
+            case "unbind", "ub" -> result = unbindTerra.onCommand(sender, command, label, args);
+            case "apply", "yes" -> result = applyTerra.onCommand(sender);
+            case "cancel", "no" -> result = cancelTerra.onCommand(sender);
+            case "config", "cfg" -> {
                 if (args.length >= 2) {
                     String configSub = args[1].toLowerCase();
                     switch (configSub) {
-                        case "reload" -> {
+                        case "reload", "r" -> {
                             return reloadTerra.onCommand(sender, command, label, args);
                         }
-                        case "info" -> {
+                        case "info", "i" -> {
                             if (!player.hasPermission("terranite.admin")) {
                                 CommandHelper.sendError(player, "You do not have permission to view config info.");
                                 return false;
@@ -158,7 +159,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                     return false;
                 }
             }
-            case "sc", "schematic" -> {
+            case "schematic", "sc" -> {
                 if (args.length < 2) {
                     CommandHelper.sendError(sender, "Usage: //schematic <save|delete|list> <name>");
                     return false;
@@ -169,9 +170,9 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                 System.arraycopy(args, 1, subArgs, 0, subArgs.length);
 
                 switch (subSubcommand) {
-                    case "save" -> result = saveTerra.onCommand(sender, command, label, subArgs);
-                    case "delete" -> result = deleteTerra.onCommand(sender, command, label, subArgs);
-                    case "list" -> result = listTerra.onCommand(sender, command, label, subArgs);
+                    case "save", "s" -> result = saveTerra.onCommand(sender, command, label, subArgs);
+                    case "delete", "d" -> result = deleteTerra.onCommand(sender, command, label, subArgs);
+                    case "list", "l" -> result = listTerra.onCommand(sender, command, label, subArgs);
                     default -> {
                         CommandHelper.sendError(sender, "Unknown schematic subcommand: " + subSubcommand);
                         return false;
@@ -219,15 +220,15 @@ public class terraCommand implements CommandExecutor, TabCompleter {
         if (args.length == 0) return List.of();
 
         // Handle config subcommands first
-        if (args[0].equalsIgnoreCase("config")) {
+        if (args[0].equalsIgnoreCase("config") || args[0].equalsIgnoreCase("cfg")) {
             if (!player.hasPermission("terranite.admin")) return List.of();
 
             if (args.length == 2) {
-                return Stream.of("reload", "info")
+                return Stream.of("reload", "info", "r", "i")
                         .filter(sub -> sub.startsWith(args[1].toLowerCase()))
                         .collect(Collectors.toList());
             }
-            if (args.length == 3 && args[1].equalsIgnoreCase("info")) {
+            if (args.length == 3 && (args[1].equalsIgnoreCase("info") || args[1].equalsIgnoreCase("i"))) {
                 return CONFIG_KEYS.stream()
                         .filter(key -> key.startsWith(args[2].toLowerCase()))
                         .collect(Collectors.toList());
@@ -244,7 +245,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
         }
 
         // Block-material based suggestions
-        if (subcommand.equals("count") || subcommand.equals("break")) {
+        if (subcommand.equals("count") || subcommand.equals("cnt") || subcommand.equals("break") || subcommand.equals("br")) {
             return Stream.of(Material.values())
                     .filter(Material::isBlock)
                     .flatMap(material -> Stream.of(
@@ -261,7 +262,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 2) {
             switch (subcommand) {
-                case "set", "fill", "center" -> {
+                case "set", "fill", "center", "s", "f", "ce" -> {
                     return Stream.of(Material.values())
                             .filter(Material::isBlock)
                             .filter(m -> exempt || inverted == blockedMaterials.contains(m))
@@ -276,13 +277,13 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                             .limit(20)
                             .collect(Collectors.toList());
                 }
-                case "pos" -> {
+                case "pos", "p" -> {
                     return List.of("1", "2");
                 }
-                case "select" -> {
+                case "select", "se" -> {
                     return List.of("2", "5", "10", "15", "20");
                 }
-                case "paste" -> {
+                case "paste", "pa" -> {
                     String typed = args[1].toLowerCase();
                     List<String> allSchematics = plugin.getSchematicIO().getSavedSchematicNames();
                     return allSchematics.stream()
@@ -290,11 +291,11 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                             .limit(20)
                             .collect(Collectors.toList());
                 }
-                case "generate" -> {
+                case "generate", "g" -> {
                     return List.of("box", "hollow_box", "sphere", "hollow_sphere");
                 }
-                case "extend", "shrink", "move" -> {
-                    return Stream.of("north", "south", "east", "west", "up", "down")
+                case "extend", "shrink", "move", "e", "sh", "mo" -> {
+                    return Stream.of("north", "south", "east", "west", "up", "down", "n", "s", "e", "w", "u", "d")
                             .filter(dir -> dir.startsWith(args[1].toLowerCase()))
                             .toList();
                 }
@@ -303,12 +304,12 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
         if ((args[0].equalsIgnoreCase("schematic") || args[0].equalsIgnoreCase("sc"))) {
             if (args.length == 2) {
-                return Stream.of("save", "delete", "list")
+                return Stream.of("save", "delete", "list", "s", "d", "l")
                         .filter(sub -> sub.startsWith(args[1].toLowerCase()))
                         .collect(Collectors.toList());
             }
 
-            if (args.length == 3 && args[1].equalsIgnoreCase("delete")) {
+            if (args.length == 3 && (args[1].equalsIgnoreCase("delete") || args[1].equalsIgnoreCase("d"))) {
                 return plugin.getSchematicIO().getSavedSchematicNames().stream()
                         .filter(name -> name.toLowerCase().startsWith(args[2].toLowerCase()))
                         .limit(20)
@@ -316,7 +317,44 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        if (subcommand.equals("replace") || subcommand.equals("mask")) {
+        if (subcommand.equals("replacenear") || subcommand.equals("ren")) {
+            if (args.length == 2) {
+                return Stream.of("1", "2", "5", "10", "20")
+                        .filter(num -> num.startsWith(args[1].toLowerCase()))
+                        .toList();
+            }
+            if (args.length == 3) {
+                return Stream.of(Material.values())
+                        .filter(Material::isBlock)
+                        .flatMap(material -> Stream.of(
+                                material.name().toLowerCase(),                    // e.g., "stone"
+                                "minecraft:" + material.name().toLowerCase()     // e.g., "minecraft:stone"
+                        ))
+                        .filter(name -> name.startsWith(args[2].toLowerCase()))
+                        .distinct()
+                        .sorted(Comparator.comparing((String name) -> name.startsWith("minecraft:") ? 1 : 0)
+                                .thenComparing(String::compareTo))
+                        .limit(20)
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 4) {
+                return Stream.of(Material.values())
+                        .filter(Material::isBlock)
+                        .filter(m -> exempt || inverted == blockedMaterials.contains(m))
+                        .flatMap(material -> Stream.of(
+                                material.name().toLowerCase(),                    // e.g., "stone"
+                                "minecraft:" + material.name().toLowerCase()     // e.g., "minecraft:stone"
+                        ))
+                        .filter(name -> name.startsWith(args[3].toLowerCase()))
+                        .distinct()
+                        .sorted(Comparator.comparing((String name) -> name.startsWith("minecraft:") ? 1 : 0)
+                                .thenComparing(String::compareTo))
+                        .limit(20)
+                        .collect(Collectors.toList());
+            }
+        }
+
+        if (subcommand.equals("replace") || subcommand.equals("re") || subcommand.equals("mask") || subcommand.equals("ma")) {
             if (args.length == 2) {
                 return Stream.of(Material.values())
                         .filter(Material::isBlock)
@@ -331,7 +369,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                         .limit(20)
                         .collect(Collectors.toList());
             }
-            if (args.length == 3 && !subcommand.equals("mask")) {
+            if (args.length == 3 && !(subcommand.equals("mask") || subcommand.equals("ma"))) {
                 return Stream.of(Material.values())
                         .filter(Material::isBlock)
                         .filter(m -> exempt || inverted == blockedMaterials.contains(m))
@@ -349,7 +387,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 3) {
-            if (subcommand.equals("generate")) {
+            if (subcommand.equals("generate") || subcommand.equals("g")) {
                 return Stream.of(Material.values())
                         .filter(Material::isBlock)
                         .filter(m -> exempt || inverted == blockedMaterials.contains(m))
@@ -365,12 +403,12 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                         .collect(Collectors.toList());
             }
 
-            if (subcommand.equals("set")) {
+            if (subcommand.equals("set") || subcommand.equals("s")) {
                 return List.of("#preview");
             }
         }
 
-        if (subcommand.equals("pos") && args.length >= 3 && args.length <= 5) {
+        if ((subcommand.equals("pos") || subcommand.equals("p")) && args.length >= 3 && args.length <= 5) {
             Location loc = player.getLocation();
             switch (args.length) {
                 case 3 -> {
@@ -385,7 +423,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        if ((subcommand.equals("extend") || subcommand.equals("shrink")) || subcommand.equals("move") && args.length == 3) {
+        if ((subcommand.equals("extend") || subcommand.equals("e") || subcommand.equals("shrink") || subcommand.equals("sh") || subcommand.equals("move") || subcommand.equals("mo")) && args.length == 3) {
             return Stream.of("1", "2", "5", "10", "20")
                     .filter(num -> num.startsWith(args[2].toLowerCase()))
                     .toList();

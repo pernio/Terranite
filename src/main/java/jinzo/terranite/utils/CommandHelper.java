@@ -95,13 +95,13 @@ public class CommandHelper {
      *
      * @return number of blocks changed, -1 if positions are not set, -2 if selection is too large
      */
-    public static int modifySelection(Player player, Material material, Predicate<Block> filter) {
+    public static int modifySelection(Player player, Material material, Predicate<Block> filter, @Nullable Location pos1, @Nullable Location pos2) {
         var selection = SelectionManager.getSelection(player);
-        if (selection.pos1 == null || selection.pos2 == null) return -1;
+        if ((pos1 == null && selection.pos1 == null) || (pos2 == null && selection.pos2 == null)) return -1;
         boolean inverted = config.excludeNotifiedBlocks;
 
-        Location loc1 = selection.pos1;
-        Location loc2 = selection.pos2;
+        Location loc1 = pos1 == null ? selection.pos1 : pos1;
+        Location loc2 = pos2 == null ? selection.pos2 : pos2;
 
         int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
         int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
@@ -221,13 +221,13 @@ public class CommandHelper {
         };
     }
 
-    public static int modifySelection(Player player, BlockModifier modifier) {
+    public static int modifySelection(Player player, BlockModifier modifier, @Nullable Location pos1, @Nullable Location pos2) {
         var selection = SelectionManager.getSelection(player);
-        if (selection.pos1 == null || selection.pos2 == null) return -1;
+        if ((pos1 == null && selection.pos1 == null) || (pos2 == null && selection.pos2 == null)) return -1;
         boolean inverted = config.excludeNotifiedBlocks;
 
-        Location loc1 = selection.pos1;
-        Location loc2 = selection.pos2;
+        Location loc1 = pos1 == null ? selection.pos1 : pos1;
+        Location loc2 = pos2 == null ? selection.pos2 : pos2;
 
         int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
         int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());

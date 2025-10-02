@@ -47,7 +47,7 @@ public class setTerra {
                 CommandHelper.requestPreview(player, material, changed);
             }
         } else {
-            changed = CommandHelper.modifySelection(player, material, block -> true);
+            changed = CommandHelper.modifySelection(player, material, block -> true, null, null);
             if (changed > 0) {
                 CommandHelper.sendSuccess(player, "Set " + changed + (changed == 1 ? " block" : " blocks") + " to " + material.name().toLowerCase() + ".");
             }
