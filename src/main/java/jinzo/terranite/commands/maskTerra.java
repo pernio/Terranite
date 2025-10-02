@@ -22,7 +22,7 @@ public class maskTerra {
         if (material == null) material = Material.AIR;
         MaskManager.setMask(player, material);
 
-        CommandHelper.sendSuccess(player, "Mask successfully applied on type " + material);
+        CommandHelper.sendSuccess(player, "Mask successfully applied on type " + material.name().toLowerCase());
 
         return true;
     }

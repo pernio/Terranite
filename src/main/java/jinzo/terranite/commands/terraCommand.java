@@ -39,9 +39,9 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             "cut", "extend", "fill", "generate", "paste", "pos",
             "redo", "replace", "replacenear", "select", "set",
             "shrink", "undo", "wand", "schematic", "move", "mask",
-            "apply", "cancel", "teleport", "bind", "unbind"
+            "apply", "cancel", "teleport", "bind", "unbind", "config"
     );
-    private static final List<String> ADMINSUBCOMMANDS = List.of("config", "cfg");
+    private static final List<String> ADMINSUBCOMMANDS = List.of("config");
 
     private static final List<String> CONFIG_KEYS = List.of(
             "maxSelectionSize", "selectEffectColor", "outlineEffectColor", "outlineEffectSpeed", "selectSoundName",
@@ -292,7 +292,9 @@ public class terraCommand implements CommandExecutor, TabCompleter {
                             .collect(Collectors.toList());
                 }
                 case "generate", "g" -> {
-                    return List.of("box", "hollow_box", "sphere", "hollow_sphere");
+                    return Stream.of("box", "hollow_box", "sphere", "hollow_sphere", "b", "hb", "s", "hs")
+                            .filter(sub -> sub.startsWith(args[1].toLowerCase()))
+                            .collect(Collectors.toList());
                 }
                 case "extend", "shrink", "move", "e", "sh", "mo" -> {
                     return Stream.of("north", "south", "east", "west", "up", "down", "n", "s", "e", "w", "u", "d")

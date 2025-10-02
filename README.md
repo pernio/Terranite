@@ -16,37 +16,70 @@ These commands are available in the following aliases:<br/>
 -`/terra`<br/>
 -`/terranite`
 
-| Command                                  | Description                                                         |
-|------------------------------------------|---------------------------------------------------------------------|
-| `//wand`                                 | Gives the player a Terra wand to make selections.                   |
-| `//bind`                                 | Binds an item to Terranite.                                         |
-| `//unbind`                               | Unbinds an item to Terranite. WARNING: Removes all lore.            |
-| `//clear`                                | Clears the positions set of a selection.                            |
-| `//count <block> <...>`                  | Counts all (specified) blocks in a selection.                       |
-| `//set <block> [#preview]`               | Sets all blocks in a selection to a new block.                      |
-| `//fill <block>`                         | Fills all air blocks in a selection to a new block.                 |
-| `//mask [block]`                         | Sets the mask of the //fill command (default: air)                  |
-| `//center <block>`                       | Sets a block on the center of the selection.                        |
-| `//break <block> <...>`                  | Breaks all (specified) blocks in a selection.                       |
-| `//replace <block> <block>`              | Replaces all blocks in a selection to another block.                |
-| `//replacenear <radius> <block> <block>` | Replaces all blocks in a radius around the player to another block. |
-| `//pos <1-2> <x> <y> <z>`                | Sets position 1 or 2 of a selection to a specific coord.            |
-| `//select <radius>`                      | Selects a specific radius around the player.                        |
-| `//copy`                                 | Copies all blocks in a selection.                                   |
-| `//cut`                                  | Cuts all blocks in a selection.                                     |
-| `//paste`                                | Pasts a copied/cut selection.                                       |
-| `//undo`                                 | Undoes the previous undo action done.                               |
-| `//redo`                                 | Redoes the previous undo action done.                               |
-| `//generate <shape> <block>`             | Generate a shape with a specific block.                             |
-| `//teleport`                             | Teleports the player to the center of a selection.                  |
-| `//apply`                                | Applies the preview of an action.                                   |
-| `//cancel`                               | Cancels the preview of an action.                                   |
-| `//move <direction> <amount>`            | Moves the selection to a certain direction.                         |
-| `//shrink <direction> <amount>`          | Shrinks the selection to a certain direction.                       |
-| `//extend <direction> <amount>`          | Extends the selection to a certain direction.                       |
-| `//schematic <delete/list/save>`         | All commands related to schematics.                                 |
-| `//config <reload/info>`                 | Reloads the config file. (Admin)                                    |
+| Command                                          | Description                                                         |
+|--------------------------------------------------|---------------------------------------------------------------------|
+| `//wand`                                         | Gives the player a Terra wand to make selections.                   |
+| `//bind`                                         | Binds an item to Terranite.                                         |
+| `//unbind`                                       | Unbinds an item to Terranite. WARNING: Removes all lore.            |
+| `//clear`                                        | Clears the positions set of a selection.                            |
+| `//count <block> <...>`                          | Counts all (specified) blocks in a selection.                       |
+| `//set <block> [#preview]`                       | Sets all blocks in a selection to a new block.                      |
+| `//fill <block>`                                 | Fills all air blocks in a selection to a new block.                 |
+| `//mask [block]`                                 | Sets the mask of the //fill command (default: air)                  |
+| `//center <block>`                               | Sets a block on the center of the selection.                        |
+| `//break <block> <...>`                          | Breaks all (specified) blocks in a selection.                       |
+| `//replace <old block> <new block>`              | Replaces all blocks in a selection to another block.                |
+| `//replacenear <radius> <old block> <new block>` | Replaces all blocks in a radius around the player to another block. |
+| `//pos <1-2> <x> <y> <z>`                        | Sets position 1 or 2 of a selection to a specific coord.            |
+| `//select <radius>`                              | Selects a specific radius around the player.                        |
+| `//copy`                                         | Copies all blocks in a selection.                                   |
+| `//cut`                                          | Cuts all blocks in a selection.                                     |
+| `//paste`                                        | Pasts a copied/cut selection.                                       |
+| `//undo`                                         | Undoes the previous undo action done.                               |
+| `//redo`                                         | Redoes the previous undo action done.                               |
+| `//generate <shape> <block>`                     | Generate a shape with a specific block.                             |
+| `//teleport`                                     | Teleports the player to the center of a selection.                  |
+| `//apply`                                        | Applies the preview of an action.                                   |
+| `//cancel`                                       | Cancels the preview of an action.                                   |
+| `//move <direction> <amount>`                    | Moves the selection to a certain direction.                         |
+| `//shrink <direction> <amount>`                  | Shrinks the selection to a certain direction.                       |
+| `//extend <direction> <amount>`                  | Extends the selection to a certain direction.                       |
+| `//schematic <delete/list/save>`                 | All commands related to schematics.                                 |
+| `//config <reload/info>`                         | Reloads the config file. (Admin)                                    |
 
+### Aliases
+Each command has an alias to make the execution faster. All listed below. Subcommands also have aliases.
+
+| Command         | Alias   |
+|-----------------|---------|
+| `//wand`        | `//`    |
+| `//bind`        | `//b`   |
+| `//unbind`      | `//ub`  |
+| `//clear`       | `//c`   |
+| `//count`       | `//cnt` |
+| `//set`         | `//s`   |
+| `//fill`        | `//f`   |
+| `//mask`        | `//ma`  |
+| `//center`      | `//ce`  |
+| `//break`       | `//br`  |
+| `//replace`     | `//re`  |
+| `//replacenear` | `//ren` |
+| `//pos`         | `//p`   |
+| `//select`      | `//se`  |
+| `//copy`        | `//co`  |
+| `//cut`         | `//cu`. |
+| `//paste`       | `//pa`  |
+| `//undo`        | `//u`   |
+| `//redo`        | `//r`   |
+| `//generate>`   | `//g`   |
+| `//teleport`    | `//tp`  |
+| `//apply`       | `//yes` |
+| `//cancel`      | `//no`  |
+| `//move`        | `//mo`  |
+| `//shrink`      | `//sh`  |
+| `//extend`      | `//e`   |
+| `//schematic`   | `//sc`  |
+| `//config`      | `//cfg` |
 
 ### Config
 
