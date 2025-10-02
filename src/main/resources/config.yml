@@ -53,7 +53,7 @@ notified_blocks:
 log_notifications: false
 
 # If everyone should be able to delete any saved schematic.
-# If false, only the player who saved the schematic can delete it.
+# If true, only the player who saved the schematic can delete it.
 # terranite.admin permission bypasses this setting.
 safe_delete_schematics: true
 

@@ -168,13 +168,13 @@ commands:
   "/bind":
     aliases: ["/b"]
     description: Binds a tool to Terranite
-    permission: terranite.use
+    permission: terranite.bind
     permission-message: You do not have permission to use this command.
 
   "/unbind":
     aliases: ["/ub"]
     description: Unbinds a tool from Terranite
-    permission: terranite.use
+    permission: terranite.bind
     permission-message: You do not have permission to use this command.
 
 permissions:
@@ -182,12 +182,19 @@ permissions:
     description: Allows use of the Terranite base command and its aliases
     default: op
 
+  terranite.admin:
+    description: Allows use of administrative commands for Terranite
+    default: op
+    children:
+      terranite.teleport: true
+      terranite.bind: true
+
   terranite.teleport:
     description: Allows player to use the //teleport command
     default: op
 
-  terranite.admin:
-    description: Allows use of administrative commands for Terranite
+  terranite.bind:
+    description: Allows player to use the //bind & //unbind command
     default: op
 
   terranite.exempt.*:

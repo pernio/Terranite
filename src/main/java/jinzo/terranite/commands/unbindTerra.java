@@ -22,6 +22,8 @@ public class unbindTerra {
             return false;
         }
 
+        if (!player.hasPermission("terranite.bind")) return false;
+
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item == null || item.getType().isAir()) {
             CommandHelper.sendError(player, "You must be holding an item to unbind it!");
