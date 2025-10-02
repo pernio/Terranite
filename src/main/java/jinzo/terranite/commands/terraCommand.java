@@ -37,7 +37,11 @@ public class terraCommand implements CommandExecutor, TabCompleter {
 
     public static final List<String> SUBCOMMANDS = List.of(
             "wand", "pos", "copy", "cut", "paste",
-            "select", "fill", "replace", "count", "center", "undo", "redo", "clear", "schematic", "sc", "generate", "config", "extend", "shrink", "break", "set", "move", "apply", "cancel", "mask"
+            "select", "fill", "replace", "count", "center",
+            "undo", "redo", "clear", "schematic", "sc",
+            "generate", "config", "extend", "shrink", "break",
+            "set", "move", "apply", "cancel", "mask", "teleport",
+            "tp", "replacenear"
     );
     private static final List<String> ADMINSUBCOMMANDS = List.of("config");
 
@@ -116,6 +120,7 @@ public class terraCommand implements CommandExecutor, TabCompleter {
             case "shrink" -> result = shrinkTerra.onCommand(sender, command, label, args);
             case "move" -> result = moveTerra.onCommand(sender, command, label, args);
             case "mask" -> result = maskTerra.onCommand(sender, command, label, args);
+            case "teleport", "tp" -> result = teleportTerra.onCommand(sender, command, label, args);
             case "apply" -> result = applyTerra.onCommand(sender);
             case "cancel" -> result = cancelTerra.onCommand(sender);
             case "config" -> {

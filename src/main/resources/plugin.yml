@@ -8,127 +8,197 @@ commands:
     aliases: [terra, terranite, selection]
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/config":
+    aliases: ["/cfg"]
     description: Configuration command for Terranite
     permission: terranite.admin
     permission-message: You do not have permission to use this command.
+
   "/break":
+    aliases: ["/b"]
     description: Break blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/center":
+    aliases: ["/ce"]
     description: Center blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/clear":
+    aliases: ["/c"]
     description: Clear selection command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/copy":
+    aliases: ["/co"]
     description: Copy blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/count":
+    aliases: ["/cnt"]
     description: Count blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/cut":
+    aliases: ["/cu"]
     description: Cut blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/extend":
+    aliases: ["/e"]
     description: Extend selection command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/fill":
+    aliases: ["/f"]
     description: Fill blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/generate":
+    aliases: ["/g"]
     description: Generate blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/paste":
+    aliases: ["/pa"]
     description: Paste blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/pos":
+    aliases: ["/p"]
     description: Set position command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/redo":
+    aliases: ["/r"]
     description: Redo command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/replace":
+    aliases: ["/rp"]
     description: Replace blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
+  "/replacenear":
+    aliases: ["/rpn"]
+    description: Replace blocks near player command
+    permission: terranite.use
+    permission-message: You do not have permission to use this command.
+
   "/select":
+    aliases: ["/se"]
     description: Select blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/set":
+    aliases: ["/s"]
     description: Set blocks command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/shrink":
+    aliases: ["/sh"]
     description: Shrink selection command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/undo":
+    aliases: ["/u"]
     description: Undo command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/wand":
+    aliases: ["/"]
     description: Wand command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/schematic":
+    aliases: ["/sc"]
     description: Schematic management command
-    aliases: [sc]
     permission: terranite.use
     permission-message: You do not have permission to use this command.
-  "/sc":
-    description: Schematic management command
-    aliases: [schematic]
-    permission: terranite.use
-    permission-message: You do not have permission to use this command.
+
   "/move":
+    aliases: ["/mo"]
     description: Move selection command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/mask":
+    aliases: ["/ma"]
     description: Mask command for //fill
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/apply":
+    aliases: ["/yes"]
     description: Apply selection command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
   "/cancel":
+    aliases: ["/no"]
     description: Cancel selection command
     permission: terranite.use
     permission-message: You do not have permission to use this command.
+
+  "/teleport":
+    aliases: ["/tp"]
+    description: Teleport to center of selection command
+    permission: terranite.teleport
+    permission-message: You do not have permission to use this command.
+
 permissions:
   terranite.use:
     description: Allows use of the Terranite base command and its aliases
     default: op
+
+  terranite.teleport:
+    description: Allows player to use the //teleport command
+    default: op
+
   terranite.admin:
     description: Allows use of administrative commands for Terranite
     default: op
+
   terranite.exempt.*:
-    description: Allows players to bypass all restrictions for Terranite commands
+    description: Allows players to bypass all Terranite restrictions
     default: op
+    children:
+      terranite.exempt.selection: true
+      terranite.exempt.blockedBlocks: true
+      terranite.exempt.notifiedBlocks: true
+      terranite.exempt.cooldown: true
+
   terranite.exempt.selection:
-    description: Allows players to bypass selection requirements for Terranite commands
+    description: Allows players to bypass selection requirements
     default: op
+
   terranite.exempt.blockedBlocks:
-    description: Allows players to bypass block requirements for Terranite commands
+    description: Allows players to bypass block restrictions
     default: op
+
   terranite.exempt.notifiedBlocks:
-    description: Allows players to bypass notification requirements for Terranite commands
+    description: Allows players to bypass notifications
     default: op
+
   terranite.exempt.cooldown:
-    description: Allows players to bypass command cooldowns for Terranite commands
+    description: Allows players to bypass cooldowns
     default: op
