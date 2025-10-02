@@ -1,6 +1,8 @@
 package jinzo.terranite.commands;
 
+import jinzo.terranite.utils.ActionHistoryManager;
 import jinzo.terranite.utils.CommandHelper;
+import jinzo.terranite.utils.CoreProtectHook;
 import jinzo.terranite.utils.SelectionManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,6 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class generateTerra {
     public static boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
                                     @NotNull String label, @NotNull String[] args) {
@@ -20,17 +25,29 @@ public class generateTerra {
         }
 
         if (args.length != 3) {
-            CommandHelper.sendError(player, "Usage: /s generate <box|hollow_box|sphere|hollow_sphere> <block>");
+            CommandHelper.sendError(player, "Usage: //generate <box|hollow_box|sphere|hollow_sphere> <block>");
             return false;
         }
 
-        String shape = args[1].toLowerCase();
-        Material material = Material.matchMaterial(args[2]);
+        String shape = "box";
 
-        if (material == null || !material.isBlock()) {
-            CommandHelper.sendError(player, "Invalid block type: " + args[2]);
-            return false;
+        switch (args[1].toLowerCase()) {
+            case "b" -> {
+                shape = "box";
+            }
+            case "hb" -> {
+                shape = "hollow_box";
+            }
+            case "s" -> {
+                shape = "sphere";
+            }
+            case "hs" -> {
+                shape = "hollow_sphere";
+            }
         }
+
+        Material material = CommandHelper.findMaterial(player, args[2]);
+        if (material == null) return false;
 
         if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
@@ -57,14 +74,14 @@ public class generateTerra {
         World world = player.getWorld();
         int changed = 0;
 
+        Map<Location, Material> snapshot = new HashMap<>();
+
         switch (shape) {
             case "box" -> {
                 for (int x = minX; x <= maxX; x++) {
                     for (int y = minY; y <= maxY; y++) {
                         for (int z = minZ; z <= maxZ; z++) {
-                            Block block = world.getBlockAt(x, y, z);
-                            block.setType(material);
-                            changed++;
+                            changed += handleBlockChange(world.getBlockAt(x, y, z), player, material, snapshot);
                         }
                     }
                 }
@@ -74,11 +91,7 @@ public class generateTerra {
                     for (int y = minY; y <= maxY; y++) {
                         for (int z = minZ; z <= maxZ; z++) {
                             boolean isEdge = x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ;
-                            if (isEdge) {
-                                Block block = world.getBlockAt(x, y, z);
-                                block.setType(material);
-                                changed++;
-                            }
+                            if (isEdge) changed += handleBlockChange(world.getBlockAt(x, y, z), player, material, snapshot);
                         }
                     }
                 }
@@ -105,13 +118,9 @@ public class generateTerra {
                             double distanceSq = dx * dx + dy * dy + dz * dz;
 
                             boolean isInside = distanceSq <= rSq;
-                            boolean isShell = shape.equals("hollow_sphere") ? distanceSq >= innerRSq : true;
+                            boolean isShell = !shape.equals("hollow_sphere") || distanceSq >= innerRSq;
 
-                            if (isInside && isShell) {
-                                Block block = world.getBlockAt(x, y, z);
-                                block.setType(material);
-                                changed++;
-                            }
+                            if (isInside && isShell) changed += handleBlockChange(world.getBlockAt(x, y, z), player, material, snapshot);
                         }
                     }
                 }
@@ -122,8 +131,25 @@ public class generateTerra {
             }
         }
 
+        if (!snapshot.isEmpty()) {
+            ActionHistoryManager.record(player, snapshot);
+        }
+
         CommandHelper.checkClearSelection(player);
-        CommandHelper.sendSuccess(player, "Generated " + shape + " with " + changed + " blocks.");
+        CommandHelper.sendSuccess(player, "Generated " + shape + " with " + changed + (changed == 1 ? " block." : " blocks."));
         return true;
+    }
+
+    private static int handleBlockChange(Block block, Player player, Material material, Map<Location, Material> snapshot) {
+        Material before = block.getType();
+        if (before.equals(material)) return 0;
+
+        snapshot.put(block.getLocation(), before);
+        CoreProtectHook.logDestroy(player, block.getLocation(), before);
+
+        block.setType(material);
+        CoreProtectHook.logCreate(player, block.getLocation(), material);
+
+        return 1;
     }
 }

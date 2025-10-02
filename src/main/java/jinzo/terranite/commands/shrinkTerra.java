@@ -19,7 +19,7 @@ public class shrinkTerra {
         }
 
         if (args.length < 3) {
-            CommandHelper.sendError(player, "Usage: /s shrink <direction> <range>");
+            CommandHelper.sendError(player, "Usage: //shrink <direction> <range>");
             return false;
         }
 
@@ -36,7 +36,7 @@ public class shrinkTerra {
 
         var selection = SelectionManager.getSelection(player);
         if (selection == null || selection.pos1 == null || selection.pos2 == null) {
-            CommandHelper.sendError(player, "You must have a valid selection with both positions set.");
+            CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
             return false;
         }
 
@@ -102,9 +102,9 @@ public class shrinkTerra {
         }
 
         if (actualShrunk < requested) {
-            CommandHelper.sendSuccess(player, "Selection shrunk " + direction + " by " + actualShrunk + " blocks (requested " + requested + ").");
+            CommandHelper.sendSuccess(player, "Selection shrunk " + direction + " by " + actualShrunk + (actualShrunk == 1 ? " block" : " blocks") + " (requested " + requested + ").");
         } else {
-            CommandHelper.sendSuccess(player, "Selection shrunk " + direction + " by " + actualShrunk + " blocks.");
+            CommandHelper.sendSuccess(player, "Selection shrunk " + direction + " by " + actualShrunk + (actualShrunk == 1 ? " block" : " blocks"));
         }
 
         return true;

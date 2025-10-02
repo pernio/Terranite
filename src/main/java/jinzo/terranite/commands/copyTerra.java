@@ -23,7 +23,7 @@ public class copyTerra {
 
         var sel = SelectionManager.getSelection(player);
         if (sel.pos1 == null || sel.pos2 == null) {
-            CommandHelper.sendError(player, "Set both positions first.");
+            CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
             return false;
         }
 

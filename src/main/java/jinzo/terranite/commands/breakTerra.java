@@ -1,6 +1,7 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.utils.CommandHelper;
+import jinzo.terranite.utils.CoreProtectHook;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,21 +25,19 @@ public class breakTerra {
 
         Set<Material> targetMaterials = new HashSet<>();
         for (int i = 1; i < args.length; i++) {
-            Material mat = Material.matchMaterial(args[i]);
-            if (mat == null || !mat.isBlock()) {
-                CommandHelper.sendError(player, "Invalid block type: " + args[i]);
-                return false;
-            }
+            Material mat = CommandHelper.findMaterial(player, args[i]);
+            if (mat == null) return false;
             targetMaterials.add(mat);
         }
 
         int result = CommandHelper.modifySelection(player, block -> {
             if (targetMaterials.contains(block.getType())) {
+                CoreProtectHook.logDestroy(player, block.getLocation(), Material.AIR);
                 block.setType(Material.AIR);
                 return true;
             }
             return false;
-        });
+        }, null, null);
 
         if (result == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
@@ -48,7 +47,7 @@ public class breakTerra {
         if (result == -2) return false;
 
         CommandHelper.checkClearSelection(player);
-        CommandHelper.sendSuccess(player, "Deleted " + result + " block(s).");
+        CommandHelper.sendSuccess(player, "Deleted " + result + (result == 1 ? " block." : " blocks."));
         return true;
     }
 }

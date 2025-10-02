@@ -4,6 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jinzo.terranite.commands.*;
+import jinzo.terranite.commands.schematic.deleteTerra;
+import jinzo.terranite.commands.schematic.saveTerra;
+import jinzo.terranite.commands.schematic.listTerra;
 import jinzo.terranite.listeners.JoinListener;
 import jinzo.terranite.listeners.PickupListener;
 import jinzo.terranite.listeners.SelectionListener;
@@ -42,7 +45,8 @@ public final class Terranite extends JavaPlugin {
         pasteTerra pasteCommand = new pasteTerra(schematicIO);
         saveTerra saveCommand = new saveTerra(schematicIO);
         deleteTerra deleteCommand = new deleteTerra(schematicIO);
-        terraCommand terraCommand = new terraCommand(pasteCommand, saveCommand, deleteCommand);
+        listTerra listCommand = new listTerra(schematicIO);
+        terraCommand terraCommand = new terraCommand(pasteCommand, saveCommand, deleteCommand, listCommand);
 
         // Get the plugin manager
         PluginCommand command;

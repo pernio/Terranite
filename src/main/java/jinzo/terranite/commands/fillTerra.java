@@ -1,6 +1,7 @@
 package jinzo.terranite.commands;
 
 import jinzo.terranite.utils.CommandHelper;
+import jinzo.terranite.utils.MaskManager;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,19 +17,17 @@ public class fillTerra {
         }
 
         if (args.length < 2) {
-            CommandHelper.sendError(player, "Usage: /s fill <block>");
+            CommandHelper.sendError(player, "Usage: //fill <block>");
             return false;
         }
 
-        Material material = Material.matchMaterial(args[1]);
-        if (material == null || !material.isBlock()) {
-            CommandHelper.sendError(player, "Invalid block type: " + args[1]);
-            return false;
-        }
+        Material mask = MaskManager.getMask(player);
+        Material material = CommandHelper.findMaterial(player, args[1]);
+        if (material == null) return false;
 
         if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
-        int changed = CommandHelper.modifySelection(player, material, block -> block.getType().isAir());
+        int changed = CommandHelper.modifySelection(player, material, block -> block.getType() == mask, null, null);
 
         if (changed == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");

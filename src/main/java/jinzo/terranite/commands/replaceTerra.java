@@ -21,26 +21,19 @@ public class replaceTerra {
         }
 
         if (args.length < 3) {
-            CommandHelper.sendError(player, "Usage: /s replace <target_block> <new_block>");
+            CommandHelper.sendError(player, "Usage: //replace <target_block> <new_block>");
             return false;
         }
 
-        Material target = Material.matchMaterial(args[1]);
-        Material replacement = Material.matchMaterial(args[2]);
+        Material target = CommandHelper.findMaterial(player, args[1]);
+        if (target == null) return false;
 
-        if (target == null || !target.isBlock()) {
-            CommandHelper.sendError(player, "Invalid target block: " + args[1]);
-            return false;
-        }
-
-        if (replacement == null || !replacement.isBlock()) {
-            CommandHelper.sendError(player, "Invalid replacement block: " + args[2]);
-            return false;
-        }
+        Material replacement = CommandHelper.findMaterial(player, args[2]);
+        if (replacement == null) return false;
 
         if (CommandHelper.checkMaterialBlocked(player, replacement)) return false;
 
-        int changed = CommandHelper.modifySelection(player, replacement, block -> block.getType() == target);
+        int changed = CommandHelper.modifySelection(player, replacement, block -> block.getType() == target, null, null);
 
         if (changed == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");

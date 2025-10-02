@@ -1,4 +1,4 @@
-package jinzo.terranite.commands;
+package jinzo.terranite.commands.schematic;
 
 import jinzo.terranite.Terranite;
 import jinzo.terranite.utils.CommandHelper;
@@ -29,7 +29,7 @@ public class deleteTerra implements CommandExecutor {
         }
 
         if (args.length != 2) {
-            CommandHelper.sendError(player, "Usage: /s delete <name>");
+            CommandHelper.sendError(player, "Usage: //schematic delete <name>");
             return false;
         }
 

@@ -8,6 +8,14 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import jinzo.terranite.utils.LegacyBlockHelper;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import org.bukkit.entity.Player;
+
 public class setTerra {
     public static boolean onCommand(
             @NotNull CommandSender sender,
@@ -21,45 +29,38 @@ public class setTerra {
         }
 
         if (args.length < 2) {
-            CommandHelper.sendError(player, "Usage: /s set <block>");
+            CommandHelper.sendError(player, "Usage: //set <block> [#preview]");
             return false;
         }
 
-        Material material = Material.matchMaterial(args[1]);
-        if (material == null || !material.isBlock()) {
-            try {
-                int legacyId = Integer.parseInt(args[1]);
-                LegacyBlockHelper.LegacyBlock legacyBlock = LegacyBlockHelper.findById(legacyId);
-                if (legacyBlock == null) {
-                    CommandHelper.sendError(player, "Invalid block type: " + args[1]);
-                    return false;
-                }
-                // Use the legacy block's name to get the Material
-                material = Material.matchMaterial(legacyBlock.name);
-                if (material == null) {
-                    CommandHelper.sendError(player, "Legacy block not found: " + legacyBlock.name);
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                CommandHelper.sendError(player, "Invalid block type: " + args[1]);
-                return false;
-            }
-        }
+        Material material = CommandHelper.findMaterial(player, args[1]);
+        if (material == null) return false;
 
         if (CommandHelper.checkMaterialBlocked(player, material)) return false;
 
-        int changed = CommandHelper.modifySelection(player, material, block -> true);
+        boolean isPreview = args.length >= 3 && args[2].equalsIgnoreCase("#preview");
+
+        int changed;
+        if (isPreview) {
+            changed = CommandHelper.previewSelection(player, material, block -> true);
+            if (changed > 0) {
+                CommandHelper.requestPreview(player, material, changed);
+            }
+        } else {
+            changed = CommandHelper.modifySelection(player, material, block -> true, null, null);
+            if (changed > 0) {
+                CommandHelper.sendSuccess(player, "Set " + changed + (changed == 1 ? " block" : " blocks") + " to " + material.name().toLowerCase() + ".");
+            }
+        }
 
         if (changed == -1) {
             CommandHelper.sendError(player, "You must set both Position 1 and Position 2 first.");
             return false;
         } else if (changed == -2 || changed == -3) {
             return false;
-        } else {
-            CommandHelper.checkClearSelection(player);
-            CommandHelper.sendSuccess(player, "Set " + changed + (changed == 1 ? " block" : " blocks") + " to " + material.name().toLowerCase() + ".");
         }
 
+        CommandHelper.checkClearSelection(player);
         return true;
     }
 }

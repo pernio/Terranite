@@ -44,7 +44,7 @@ public class pasteTerra {
             sourceName = "schematic '" + name + "'";
         } else {
             if (!ClipboardManager.hasClipboard(player.getUniqueId())) {
-                CommandHelper.sendError(player, "Clipboard is empty. Use /s copy or /s cut first.");
+                CommandHelper.sendError(player, "Clipboard is empty. Use //copy or //cut first.");
                 return false;
             }
             var clipboardData = ClipboardManager.getClipboard(player.getUniqueId());
@@ -56,6 +56,9 @@ public class pasteTerra {
 
         var blockedMaterials = Terranite.getInstance().getConfiguration().blockedMaterials;
         var notifiedMaterials = Terranite.getInstance().getConfiguration().notifiedMaterials;
+
+        boolean invertedBlocked = Terranite.getInstance().getConfiguration().excludeBlockedBlocks;
+        boolean invertedNotified = Terranite.getInstance().getConfiguration().excludeNotifiedBlocks;
 
         Map<Location, Material> snapshot = new HashMap<>();
         Map<Material, Integer> notifiedCount = new HashMap<>();
@@ -72,7 +75,7 @@ public class pasteTerra {
             Location blockLoc = pasteOrigin.clone().add(dx, dy, dz);
             BlockData blockData = entry.getValue();
 
-            if (!player.hasPermission("terranite.exempt.blockedBlocks") && blockedMaterials.contains(blockData.getMaterial())) {
+            if (!player.hasPermission("terranite.exempt.blockedBlocks") && (invertedBlocked != blockedMaterials.contains(blockData.getMaterial()))) {
                 continue;
             }
 
@@ -94,10 +97,14 @@ public class pasteTerra {
 
                 // Check if this material should notify
                 Material mat = blockData.getMaterial();
-                if (notifiedMaterials.contains(mat)) {
+                if (invertedNotified != notifiedMaterials.contains(mat)) {
                     notifiedCount.merge(mat, 1, Integer::sum);
                     firstLocation.putIfAbsent(mat, blockLoc);
                 }
+
+                // Log both modifications
+                if (!before.equals(blockData.getMaterial())) CoreProtectHook.logDestroy(player, blockLoc, before);
+                if (!before.equals(blockData.getMaterial())) CoreProtectHook.logCreate(player, blockLoc, blockData.getMaterial());
             }
         }
 
@@ -125,7 +132,7 @@ public class pasteTerra {
             CommandHelper.logMessage(player, message);
         }
 
-        CommandHelper.sendSuccess(player, "Pasted from " + sourceName + " at your location. Changed " + changed + " blocks.");
+        CommandHelper.sendSuccess(player, "Pasted from " + sourceName + " at your location. Changed " + changed + (changed == 1 ? " block." : " blocks."));
         return true;
     }
 }

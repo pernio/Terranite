@@ -9,6 +9,10 @@
 # |                     Security settings                       |
 # +-------------------------------------------------------------+
 
+# Lockdown mode of the wand.
+# When true, no one can use the wand, including players with terranite.admin permission.
+lockdown: false
+
 # Exclude listed blocks from blocked_blocks.
 # When true, all blocks will be blocked, except for those listed in blocked_blocks.
 exclude_blocked_blocks: false
@@ -49,7 +53,7 @@ notified_blocks:
 log_notifications: false
 
 # If everyone should be able to delete any saved schematic.
-# If false, only the player who saved the schematic can delete it.
+# If true, only the player who saved the schematic can delete it.
 # terranite.admin permission bypasses this setting.
 safe_delete_schematics: true
 
@@ -72,6 +76,21 @@ hide_selection_when_holding_other_item: true
 # +-------------------------------------------------------------+
 # |                       Wand settings                         |
 # +-------------------------------------------------------------+
+
+# Material of the wand - Default: ARROW.
+# Supported materials: ARROW, FEATHER
+wand_material: FEATHER
+
+# Name of the wand
+wand_name: "Terra Wand"
+
+# Description of the wand
+# null for no description.
+wand_description: "This is a tool used for Terranite."
+
+# Color of the wand - Default: GOLD.
+# Full list: https://jd.advntr.dev/api/latest/net/kyori/adventure/text/format/NamedTextColor.html
+wand_color: GOLD
 
 # If a player should be able to summon multiple wands.
 allow_multiple_wands: false
@@ -101,6 +120,5 @@ outline_effect_speed: 4
 play_sound: false
 
 # Sound of selection - Default: BLOCK_NOTE_BLOCK_PLING.
+# Full list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
 select_sound: BLOCK_NOTE_BLOCK_PLING
-# Complete effect list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
-# Complete sound list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html

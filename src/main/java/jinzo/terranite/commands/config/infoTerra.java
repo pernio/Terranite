@@ -33,7 +33,7 @@ public class infoTerra implements CommandExecutor {
             sendSpecificInfo(player, args[2].toLowerCase());
             return true;
         } else {
-            CommandHelper.sendError(player, "Usage: /s config info [key]");
+            CommandHelper.sendError(player, "Usage: //config info [key]");
             return false;
         }
     }
